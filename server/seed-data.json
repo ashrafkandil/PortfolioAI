@@ -1,0 +1,198 @@
+ {
+  "profile": {
+    "siteName": "Ashraf Kandil Portfolio",
+    "name": "Ashraf Kandil",
+    "role": "Senior Software Engineer & Full-Stack Developer",
+    "tagline": "Crafting robust, scalable solutions with 10+ years of experience in software development",
+    "shortBio": "Senior software engineer passionate about building scalable cloud-native products and leading high-performing development teams.",
+    "image": "images/avatar.svg",
+    "email": "ashraf.kandil@email.com",
+    "phone": "+1 (555) 123-4567",
+    "location": "San Francisco, CA"
+  },
+  "social": [
+    { "platform": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil" },
+    { "platform": "LinkedIn", "icon": "fab fa-linkedin", "url": "https://www.linkedin.com/in/ashrafkandil" },
+    { "platform": "Twitter", "icon": "fab fa-twitter", "url": "https://twitter.com/ashrafkandil" },
+    { "platform": "Stack Overflow", "icon": "fab fa-stack-overflow", "url": "https://stackoverflow.com/users/1234567/ashrafkandil" }
+  ],
+  "about": {
+    "bio": [
+      "I'm a passionate software engineer with extensive experience in building enterprise-level applications and innovative solutions. My expertise spans across multiple programming languages, frameworks, and cloud technologies.",
+      "I specialize in creating efficient, maintainable code and leading development teams to deliver exceptional results. I'm constantly learning and adapting to new technologies to stay at the forefront of software development."
+    ],
+    "skills": [
+      {
+        "title": "Languages",
+        "skills": ["Java", "Python", "JavaScript", "TypeScript", "C++", "SQL"]
+      },
+      {
+        "title": "Frameworks & Libraries",
+        "skills": ["React", "Node.js", "Spring Boot", "Django", "Angular"]
+      },
+      {
+        "title": "Tools & Technologies",
+        "skills": ["AWS", "Docker", "Kubernetes", "Git", "Jenkins", "MongoDB"]
+      }
+    ]
+  },
+  "formEndpoint": "/api/contact",
+  "experience": [
+    {
+      "id": "senior-engineer",
+      "title": "Senior Software Engineer",
+      "period": "2020 - Present",
+      "company": "Tech Solutions Inc. | San Francisco, CA",
+      "duties": [
+        "Lead a team of 8 developers in designing and implementing microservices architecture for enterprise applications",
+        "Architected and deployed cloud-native solutions using AWS services (EC2, S3, Lambda, RDS)",
+        "Implemented CI/CD pipelines using Jenkins and Docker, reducing deployment time by 60%",
+        "Mentored junior developers and conducted code reviews to maintain high code quality standards"
+      ],
+      "tech": ["Java", "Spring Boot", "React", "PostgreSQL", "AWS", "Docker", "Kubernetes", "Jenkins", "Redis"]
+    },
+    {
+      "id": "fullstack-developer",
+      "title": "Full-Stack Developer",
+      "period": "2017 - 2020",
+      "company": "Digital Innovations Corp. | New York, NY",
+      "duties": [
+        "Developed and maintained responsive web applications serving 100K+ daily active users",
+        "Designed RESTful APIs and integrated third-party services for payment processing and analytics",
+        "Optimized database queries and implemented caching strategies, improving response time by 45%",
+        "Collaborated with UX designers to implement pixel-perfect, accessible user interfaces"
+      ],
+      "tech": ["JavaScript", "Node.js", "Express", "Vue.js", "MongoDB", "MySQL", "Git", "Stripe API"]
+    },
+    {
+      "id": "software-developer",
+      "title": "Software Developer",
+      "period": "2015 - 2017",
+      "company": "StartupHub Technologies | Austin, TX",
+      "duties": [
+        "Built mobile applications for iOS and Android using React Native and native frameworks",
+        "Implemented automated testing frameworks, achieving 85% code coverage",
+        "Participated in agile development process with daily standups and sprint planning",
+        "Integrated analytics and crash reporting tools for better application monitoring"
+      ],
+      "tech": ["React Native", "Java", "Swift", "Android Studio", "Xcode", "Firebase", "Jest", "Git"]
+    },
+    {
+      "id": "junior-developer",
+      "title": "Junior Developer",
+      "period": "2013 - 2015",
+      "company": "WebDev Agency | Boston, MA",
+      "duties": [
+        "Developed custom WordPress themes and plugins for client websites",
+        "Created responsive email templates and landing pages with high conversion rates",
+        "Assisted in database design and optimization for web applications",
+        "Provided technical support and maintenance for existing client projects"
+      ],
+      "tech": ["PHP", "WordPress", "JavaScript", "jQuery", "HTML5", "CSS3", "MySQL"]
+    }
+  ],
+  "projects": [
+    {
+      "id": "erp-system",
+      "icon": "fas fa-server",
+      "title": "Enterprise Resource Planning System",
+      "description": "A comprehensive ERP system for managing inventory, sales, and customer relationships. Handles 50,000+ transactions daily with real-time analytics and reporting capabilities.",
+      "features": [
+        "Real-time inventory tracking and automated reordering",
+        "Advanced analytics dashboard with customizable reports",
+        "Multi-tenant architecture supporting 100+ concurrent users",
+        "Integration with payment gateways and shipping providers"
+      ],
+      "tech": ["Java", "Spring Boot", "Angular", "PostgreSQL", "Redis", "AWS", "Docker"],
+      "links": [
+        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://erp-demo.example.com" },
+        { "label": "Source Code", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/erp-system" }
+      ]
+    },
+    {
+      "id": "fitness-app",
+      "icon": "fas fa-mobile-alt",
+      "title": "Health & Fitness Mobile App",
+      "description": "A cross-platform mobile application for tracking workouts, nutrition, and health metrics. Features AI-powered recommendations and social sharing capabilities.",
+      "features": [
+        "Personalized workout plans using machine learning algorithms",
+        "Calorie tracking with barcode scanner and food database",
+        "Integration with wearable devices (Fitbit, Apple Watch)",
+        "Social features including challenges and leaderboards"
+      ],
+      "tech": ["React Native", "Node.js", "Express", "MongoDB", "TensorFlow", "Firebase", "REST API"],
+      "links": [
+        { "label": "App Store", "icon": "fab fa-app-store", "url": "https://apps.apple.com/app/id0000000000" },
+        { "label": "Play Store", "icon": "fab fa-google-play", "url": "https://play.google.com/store/apps/details?id=com.example.fitness" }
+      ]
+    },
+    {
+      "id": "ecommerce-platform",
+      "icon": "fas fa-shopping-cart",
+      "title": "E-Commerce Platform",
+      "description": "A scalable e-commerce platform with advanced search, recommendation engine, and multi-vendor support. Processes millions of dollars in transactions monthly.",
+      "features": [
+        "Elasticsearch-powered search with fuzzy matching and filters",
+        "AI-based product recommendations increasing sales by 30%",
+        "Secure payment processing with PCI DSS compliance",
+        "Vendor dashboard for inventory and sales management"
+      ],
+      "tech": ["Python", "Django", "React", "PostgreSQL", "Elasticsearch", "Stripe", "AWS S3"],
+      "links": [
+        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://shop-demo.example.com" },
+        { "label": "Case Study", "icon": "fas fa-file-alt", "url": "https://example.com/case-studies/ecommerce" }
+      ]
+    },
+    {
+      "id": "analytics-dashboard",
+      "icon": "fas fa-chart-line",
+      "title": "Real-Time Analytics Dashboard",
+      "description": "A real-time data visualization platform for monitoring business metrics, KPIs, and system performance. Processes and displays millions of data points per second.",
+      "features": [
+        "WebSocket-based real-time data streaming",
+        "Customizable dashboards with drag-and-drop widgets",
+        "Automated alerts and notifications for anomalies",
+        "Export capabilities for reports and presentations"
+      ],
+      "tech": ["TypeScript", "React", "Node.js", "Socket.io", "D3.js", "InfluxDB", "Grafana"],
+      "links": [
+        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://analytics-demo.example.com" },
+        { "label": "Source Code", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/analytics-dashboard" }
+      ]
+    },
+    {
+      "id": "chatbot-platform",
+      "icon": "fas fa-brain",
+      "title": "AI-Powered Chatbot Platform",
+      "description": "An intelligent chatbot platform with natural language processing capabilities. Supports multiple languages and integrates with popular messaging platforms.",
+      "features": [
+        "NLP engine with intent recognition and entity extraction",
+        "Multi-channel support (Web, Slack, Facebook Messenger)",
+        "Conversation flow builder with visual interface",
+        "Analytics and insights on user interactions"
+      ],
+      "tech": ["Python", "FastAPI", "TensorFlow", "NLTK", "Vue.js", "MongoDB", "Docker"],
+      "links": [
+        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://chatbot-demo.example.com" },
+        { "label": "Source Code", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/chatbot-platform" }
+      ]
+    },
+    {
+      "id": "security-monitor",
+      "icon": "fas fa-shield-alt",
+      "title": "Cybersecurity Monitoring System",
+      "description": "A comprehensive security monitoring and threat detection system for enterprise networks. Identifies and responds to security incidents in real-time.",
+      "features": [
+        "Network traffic analysis and anomaly detection",
+        "Automated threat intelligence gathering",
+        "Incident response automation with playbooks",
+        "Compliance reporting for SOC 2 and ISO 27001"
+      ],
+      "tech": ["Python", "Elasticsearch", "Kibana", "Logstash", "Suricata", "PostgreSQL", "Kubernetes"],
+      "links": [
+        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://security-demo.example.com" },
+        { "label": "Documentation", "icon": "fas fa-file-alt", "url": "https://example.com/docs/security-monitor" }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,8 @@ export interface Project {
   features: string[];
   tech: string[];
   links: ProjectLink[];
+  /** Short spoken summary the avatar reads aloud; built by the API. */
+  narration: string;
 }
 
 export interface SkillCategory {

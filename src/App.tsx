@@ -8,6 +8,7 @@ import Experience from './components/Experience';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import AvatarWidget from './components/Avatar/AvatarWidget';
 
 /**
  * Sections that need site data cannot render before it arrives; say so instead
@@ -85,6 +86,7 @@ export default function App() {
           ))}
         {data && <Footer profile={data.profile} social={data.social} />}
       </main>
+      {data && <AvatarWidget profile={data.profile} />}
     </div>
   );
 }

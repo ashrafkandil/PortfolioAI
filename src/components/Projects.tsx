@@ -1,5 +1,6 @@
 import type { Project } from '../types';
 import FadeIn from './FadeIn';
+import { requestNarration } from './Avatar/avatarBus';
 
 interface ProjectsProps {
   projects: Project[];
@@ -10,7 +11,7 @@ interface ProjectsProps {
 function ProjectCard({ project }: { project: Project }) {
   return (
     <FadeIn className="project-card-wrapper">
-      <article className="project-card">
+      <article className="project-card" data-narration={project.narration}>
         <div className="project-header">
           <i className={`${project.icon} project-icon`} aria-hidden="true" />
           <h3>{project.title}</h3>
@@ -33,6 +34,14 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
         <div className="project-links">
+          <button
+            type="button"
+            className="project-link project-listen"
+            onClick={() => requestNarration(project.narration)}
+            aria-label={`Listen to a summary of ${project.title}`}
+          >
+            <i className="fa-solid fa-volume-high" aria-hidden="true" /> Listen
+          </button>
           {project.links.map((link) => (
             <a
               key={link.label}

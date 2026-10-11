@@ -1,4 +1,4 @@
- looking to implment # Technical Plan: Talking Avatar for Portfolio Site
+# Technical Plan: Talking Avatar for Portfolio Site
 
 ## Overview
 Add an interactive, voice‑enabled avatar to the landing page that can greet visitors, answer FAQs, and narrate project highlights. The solution will be **free** (using open‑source libraries and free tier services) and will respect user experience best practices (opt‑in audio, short clips, multilingual support).

@@ -1,15 +1,16 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import seed from './seed-data.json' with { type: 'json' };
-import { answerLocally, limitSentences, projectNarration } from './avatar-knowledge.js';
+import { answerLocally, limitSentences, projectNarration, resolveTarget } from './avatar-knowledge.js';
 
 // Answer from the seed file rather than whatever is in the local database.
 vi.mock('./db.js', () => ({ getSiteData: () => seed }));
 
-const { createAvatarRouter } = await import('./avatar.js');
+const { createAvatarRouter, parseNavigationTag } = await import('./avatar.js');
 
 describe('answerLocally', () => {
-  const ask = (question) => answerLocally(question, seed);
+  const ask = (question) => answerLocally(question, seed).text;
+  const goes = (question) => answerLocally(question, seed).target;
 
   it('introduces the owner on a greeting', () => {
     expect(ask('Hello!')).toContain('Ashraf Kandil');
@@ -54,6 +55,47 @@ describe('answerLocally', () => {
       const answer = ask(question);
       expect(limitSentences(answer)).toBe(answer);
     }
+  });
+});
+
+describe('navigation targets', () => {
+  const goes = (question) => answerLocally(question, seed).target;
+
+  it('points each kind of answer at its section', () => {
+    expect(goes('Tell me about the chatbot')).toBe('projects/chatbot-platform');
+    expect(goes('What projects has he built?')).toBe('projects');
+    expect(goes('How can I contact him?')).toBe('contact');
+    expect(goes('What is his experience?')).toBe('experience');
+    expect(goes('What did he do at Digital Innovations?')).toBe('experience/fullstack-developer');
+    expect(goes('Does he know Django?')).toBe('skills');
+    expect(goes('What are his skills?')).toBe('skills');
+    expect(goes('Who is Ashraf?')).toBe('about');
+  });
+
+  it('does not navigate for greetings or unknown questions', () => {
+    expect(goes('hello')).toBeNull();
+    expect(goes('What is the meaning of life?')).toBeNull();
+  });
+
+  it('only shows a skill in the skills list when it is listed there', () => {
+    // Suricata appears only in a project, not in the skills section.
+    expect(goes('Does he know Suricata?')).toBe('projects/security-monitor');
+  });
+
+  it('resolves keys to a view and element id, rejecting unknown ones', () => {
+    expect(resolveTarget('projects/erp-system', seed)).toEqual({ view: 'projects', anchor: 'project-erp-system' });
+    expect(resolveTarget('skills', seed)).toEqual({ view: 'about', anchor: 'skills' });
+    expect(resolveTarget('contact', seed)).toEqual({ view: 'contact' });
+    expect(resolveTarget('projects/nope', seed)).toBeNull();
+    expect(resolveTarget(null, seed)).toBeNull();
+  });
+
+  it('parses and strips the LLM navigation tag', () => {
+    expect(parseNavigationTag('Ashraf built an ERP. [[go:projects/erp-system]]')).toEqual({
+      text: 'Ashraf built an ERP.',
+      target: 'projects/erp-system',
+    });
+    expect(parseNavigationTag('No tag here.')).toEqual({ text: 'No tag here.', target: null });
   });
 });
 
@@ -104,10 +146,14 @@ describe('avatar router (no LLM or translator configured)', () => {
     expect(config.languages.map((lang) => lang.code)).toEqual(['en']);
   });
 
-  it('answers locally', async () => {
-    const response = await post('/query', { question: 'Where is he based?', lang: 'en' });
+  it('answers locally with where to navigate', async () => {
+    const response = await post('/query', { question: 'Tell me about the analytics dashboard', lang: 'en' });
     expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ source: 'local', lang: 'en' });
+    expect(await response.json()).toMatchObject({
+      source: 'local',
+      lang: 'en',
+      target: { view: 'projects', anchor: 'project-analytics-dashboard' },
+    });
   });
 
   it('falls back to English when a language cannot be translated', async () => {

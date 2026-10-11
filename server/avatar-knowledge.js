@@ -103,27 +103,84 @@ export function introduction(data) {
   return `Hi, I'm the virtual assistant for ${name}, a ${role}. ${limitSentences(shortBio, 1)}`;
 }
 
+/** Generic words in company names that should not identify an employer on their own. */
+const COMPANY_STOPWORDS = new Set(['inc.', 'corp.', 'ltd.', 'llc', 'technologies', 'solutions', 'agency', 'group']);
+
+function findJob(question, experience) {
+  return experience.find((job) => {
+    const name = employer(job.company).toLowerCase();
+    if (question.includes(name)) return true;
+    return name
+      .split(/\s+/)
+      .filter((word) => word.length > 4 && !COMPANY_STOPWORDS.has(word))
+      .some((word) => mentions(question, word));
+  });
+}
+
+/**
+ * Places on the site the avatar can send the visitor to, keyed by the short
+ * names the answerers (and the LLM) use. `anchor` is a DOM id inside the view.
+ */
+export function siteTargets(data) {
+  const targets = new Map([
+    ['home', { view: 'home' }],
+    ['about', { view: 'about' }],
+    ['skills', { view: 'about', anchor: 'skills' }],
+    ['experience', { view: 'experience' }],
+    ['projects', { view: 'projects' }],
+    ['contact', { view: 'contact' }],
+  ]);
+  for (const job of data.experience) {
+    targets.set(`experience/${job.id}`, { view: 'experience', anchor: `experience-${job.id}` });
+  }
+  for (const project of data.projects) {
+    targets.set(`projects/${project.id}`, { view: 'projects', anchor: `project-${project.id}` });
+  }
+  return targets;
+}
+
+export function resolveTarget(key, data) {
+  return (key && siteTargets(data).get(key)) || null;
+}
+
+/**
+ * Answer in English from the site data.
+ *
+ * Returns the spoken text plus `target`, the `siteTargets` key of the part of
+ * the site the answer is about (null when there is nothing to show).
+ */
 export function answerLocally(rawQuestion, data) {
   const question = rawQuestion.toLowerCase().trim();
   const { profile, about, experience, projects } = data;
   const first = profile.name.split(' ')[0];
+  const reply = (text, target = null) => ({ text, target });
 
   if (/^(hi|hello|hey|good (morning|afternoon|evening))\b/.test(question) && question.length < 25) {
-    return introduction(data);
+    return reply(introduction(data));
   }
 
   const project = findProject(question, projects);
-  if (project) return projectNarration(project);
+  if (project) return reply(projectNarration(project), `projects/${project.id}`);
 
   if (hasAny(question, ['email', 'contact', 'reach', 'hire', 'phone', 'call', 'touch', 'message'])) {
     const phone = profile.phone ? ` or call ${profile.phone}` : '';
-    return `You can email ${first} at ${profile.email}${phone}. There's also a message form on the Contact page.`;
+    return reply(
+      `You can email ${first} at ${profile.email}${phone}. There's also a message form on the Contact page.`,
+      'contact'
+    );
+  }
+
+  const job = findJob(question, experience);
+  if (job) {
+    const tense = job === experience[0] ? 'is' : 'was';
+    const tech = job.tech.length ? ` Key technologies there: ${listPhrase(job.tech.slice(0, 3))}.` : '';
+    return reply(`${first} ${tense} a ${job.title} at ${employer(job.company)} (${job.period}).${tech}`, `experience/${job.id}`);
   }
 
   // "Where did he work?" is about employers, not the city.
   const aboutWork = hasAny(question, ['work', 'worked', 'working', 'company', 'companies', 'job']);
   if (!aboutWork && hasAny(question, ['where', 'location', 'located', 'based', 'live', 'city', 'relocate'])) {
-    return `${first} is based in ${profile.location}.`;
+    return reply(`${first} is based in ${profile.location}.`, 'contact');
   }
 
   const index = techIndex(data);
@@ -133,32 +190,40 @@ export function answerLocally(rawQuestion, data) {
     if (tech.categories.length) parts.push(`listed under ${listPhrase(tech.categories)}`);
     if (tech.projects.length) parts.push(`used in ${listPhrase(tech.projects.slice(0, 3))}`);
     const detail = parts.length ? `: it's ${parts.join(' and ')}` : '';
-    return `Yes, ${tech.name} is part of ${first}'s toolkit${detail}.`;
+    // Show the skills list when it is there, otherwise the first project using it.
+    const usedIn = projects.find((p) => p.title === tech.projects[0]);
+    const target = tech.categories.length ? 'skills' : usedIn ? `projects/${usedIn.id}` : null;
+    return reply(`Yes, ${tech.name} is part of ${first}'s toolkit${detail}.`, target);
   }
 
   if (hasAny(question, ['experience', 'job', 'jobs', 'worked', 'working', 'career', 'company', 'companies', 'current', 'currently', 'years', 'role', 'employer']) || (aboutWork && mentions(question, 'where'))) {
     const [current, ...previous] = experience;
-    if (!current) return `${first} is a ${profile.role}.`;
-    const before = previous.slice(0, 2).map((job) => employer(job.company));
+    if (!current) return reply(`${first} is a ${profile.role}.`, 'experience');
+    const before = previous.slice(0, 2).map((item) => employer(item.company));
     const earlier = before.length ? ` Before that, ${first} worked at ${listPhrase(before)}.` : '';
-    return `${first} is currently a ${current.title} at ${employer(current.company)} (${current.period}).${earlier}`;
+    return reply(
+      `${first} is currently a ${current.title} at ${employer(current.company)} (${current.period}).${earlier}`,
+      'experience'
+    );
   }
 
   if (hasAny(question, ['skill', 'skills', 'stack', 'tech', 'technology', 'technologies', 'language', 'languages', 'framework', 'frameworks', 'tools'])) {
     const summary = about.skills.map((category) => `${category.title.toLowerCase()} like ${listPhrase(category.skills.slice(0, 3))}`);
-    return `${first} works with ${listPhrase(summary)}.`;
+    return reply(`${first} works with ${listPhrase(summary)}.`, 'skills');
   }
 
   if (hasAny(question, ['project', 'projects', 'built', 'build', 'portfolio', 'work', 'made'])) {
     const titles = projects.slice(0, 3).map((p) => p.title);
-    return `Featured projects include ${listPhrase(titles)}. Ask me about any of them for details.`;
+    return reply(`Featured projects include ${listPhrase(titles)}. Ask me about any of them for details.`, 'projects');
   }
 
   if (hasAny(question, ['who', 'about', 'yourself', 'background', 'bio', 'introduce'])) {
-    return introduction(data);
+    return reply(introduction(data), 'about');
   }
 
-  return `I can tell you about ${first}'s projects, experience, skills, or how to get in touch. Try asking about one of those!`;
+  return reply(
+    `I can tell you about ${first}'s projects, experience, skills, or how to get in touch. Try asking about one of those!`
+  );
 }
 
 /** Compact, factual brief handed to the LLM as its only source of truth. */
@@ -172,12 +237,13 @@ export function buildContext(data) {
     `Email: ${profile.email}`,
     `Bio: ${about.bio.join(' ')}`,
     `Skills: ${about.skills.map((c) => `${c.title}: ${c.skills.join(', ')}`).join('; ')}`,
-    'Experience:',
+    'Experience (page key in brackets):',
     ...experience.map(
-      (job) => `- ${job.title} at ${job.company} (${job.period}). ${job.duties.slice(0, 2).join(' ')}`
+      (job) =>
+        `- [experience/${job.id}] ${job.title} at ${job.company} (${job.period}). ${job.duties.slice(0, 2).join(' ')}`
     ),
-    'Projects:',
-    ...projects.map((p) => `- ${p.title}: ${p.description} Tech: ${p.tech.join(', ')}.`),
+    'Projects (page key in brackets):',
+    ...projects.map((p) => `- [projects/${p.id}] ${p.title}: ${p.description} Tech: ${p.tech.join(', ')}.`),
   ];
   return lines.join('\n');
 }

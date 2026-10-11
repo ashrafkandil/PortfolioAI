@@ -11,7 +11,7 @@ interface ProjectsProps {
 function ProjectCard({ project }: { project: Project }) {
   return (
     <FadeIn className="project-card-wrapper">
-      <article className="project-card" data-narration={project.narration}>
+      <article className="project-card" id={`project-${project.id}`} data-narration={project.narration}>
         <div className="project-header">
           <i className={`${project.icon} project-icon`} aria-hidden="true" />
           <h3>{project.title}</h3>

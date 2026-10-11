@@ -29,6 +29,9 @@ const speechSynthesisMock = {
 
 const spokenTexts = () => speechSynthesisMock.speak.mock.calls.map(([utterance]) => utterance.text);
 
+/** Lets a test hold a query in flight; resolved by default. */
+let queryGate: Promise<void> = Promise.resolve();
+
 function mockFetch() {
   return vi.fn(async (url: string, init?: RequestInit) => {
     if (url === '/api/avatar/config') {
@@ -40,7 +43,9 @@ function mockFetch() {
     }
     if (url === '/api/avatar/query') {
       const { question } = JSON.parse(String(init?.body));
-      return Response.json({ answer: `Answer to: ${question}`, source: 'local', lang: 'en' });
+      const target = /projects/i.test(question) ? { view: 'projects', anchor: 'project-x' } : null;
+      await queryGate;
+      return Response.json({ answer: `Answer to: ${question}`, source: 'local', lang: 'en', target });
     }
     return new Response('{}', { status: 404 });
   });
@@ -100,6 +105,50 @@ describe('AvatarWidget', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Contact' }));
 
     await waitFor(() => expect(spokenTexts()).toContain('Answer to: How can I contact Ashraf?'));
+  });
+
+  it('navigates to and highlights the part of the site an answer is about', async () => {
+    const card = document.createElement('article');
+    card.id = 'project-x';
+    card.scrollIntoView = vi.fn();
+    document.body.appendChild(card);
+    const onNavigate = vi.fn();
+    render(<AvatarWidget profile={profile} view="home" onNavigate={onNavigate} />);
+    openPanel();
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+
+    await waitFor(() => expect(onNavigate).toHaveBeenCalledWith('projects'));
+    await waitFor(() => expect(card.scrollIntoView).toHaveBeenCalled());
+    expect(card.classList.contains('avatar-spotlight')).toBe(true);
+    card.remove();
+  });
+
+  it('does not navigate when the answer has no target', async () => {
+    const onNavigate = vi.fn();
+    render(<AvatarWidget profile={profile} view="home" onNavigate={onNavigate} />);
+    openPanel();
+    fireEvent.click(screen.getByRole('button', { name: 'Contact' }));
+    await screen.findByText(/Answer to: How can I contact/);
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
+
+  it('leaves the visitor alone if they moved on while the answer was in flight', async () => {
+    let release = () => {};
+    queryGate = new Promise((resolve) => {
+      release = resolve;
+    });
+    const onNavigate = vi.fn();
+    const { rerender } = render(<AvatarWidget profile={profile} view="home" onNavigate={onNavigate} />);
+    openPanel();
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+
+    // The visitor opens Experience themselves before the reply lands.
+    rerender(<AvatarWidget profile={profile} view="experience" onNavigate={onNavigate} />);
+    await act(async () => release());
+
+    await screen.findByText(/Answer to: What projects/);
+    expect(onNavigate).not.toHaveBeenCalled();
+    queryGate = Promise.resolve();
   });
 
   it('closes with the close button and with Escape', () => {

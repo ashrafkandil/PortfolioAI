@@ -1,6 +1,6 @@
 import express from 'express';
 import { getSiteData } from './db.js';
-import { answerLocally, buildContext, limitSentences } from './avatar-knowledge.js';
+import { answerLocally, buildContext, limitSentences, resolveTarget, siteTargets } from './avatar-knowledge.js';
 
 /**
  * Talking-avatar API.
@@ -81,13 +81,25 @@ async function askLlm(question, lang, data) {
     'If the facts do not cover the question, say you do not know and suggest the Contact page.',
     `Reply in ${languageName(lang)}, in at most two short sentences, plain text with no markdown or lists.`,
     `Refer to ${data.profile.name.split(' ')[0]} by first name in the third person.`,
+    'After the answer, add a tag naming the page section that best shows what you talked about,',
+    `chosen from: ${[...siteTargets(data).keys()].join(', ')}, or none. Format: [[go:projects]]`,
     '',
     buildContext(data),
   ].join('\n');
-  return chat([
+  const raw = await chat([
     { role: 'system', content: system },
     { role: 'user', content: question },
   ]);
+  return parseNavigationTag(raw);
+}
+
+const NAVIGATION_TAG = /\[\[\s*go\s*:\s*([\w/-]+)\s*\]\]/i;
+
+/** Split the LLM's "[[go:key]]" tag off its answer. */
+export function parseNavigationTag(raw) {
+  const match = raw.match(NAVIGATION_TAG);
+  const text = raw.replace(new RegExp(NAVIGATION_TAG, 'gi'), '').trim();
+  return { text, target: match ? match[1].toLowerCase() : null };
 }
 
 /**
@@ -194,8 +206,14 @@ export function createAvatarRouter() {
 
     if (llmConfig()) {
       try {
-        const answer = limitSentences(await askLlm(question, lang, data));
-        res.json({ answer, source: 'llm', lang });
+        const reply = await askLlm(question, lang, data);
+        // Trust the LLM's tag only if it names a real section; otherwise route
+        // the question the same way the local answerer would.
+        const target =
+          reply.target === 'none'
+            ? null
+            : (resolveTarget(reply.target, data) ?? resolveTarget(answerLocally(question, data).target, data));
+        res.json({ answer: limitSentences(reply.text), source: 'llm', lang, target });
         return;
       } catch (error) {
         console.warn(`Avatar LLM failed, answering locally: ${error.message}`);
@@ -204,9 +222,14 @@ export function createAvatarRouter() {
 
     // The local answerer only understands English: translate in, then back out.
     const english = lang === 'en' ? question : ((await translate(question, 'en', lang)) ?? question);
-    const answer = answerLocally(english, data);
+    const { text: answer, target } = answerLocally(english, data);
     const localized = lang === 'en' ? answer : await translate(answer, lang);
-    res.json({ answer: localized ?? answer, source: 'local', lang: localized ? lang : 'en' });
+    res.json({
+      answer: localized ?? answer,
+      source: 'local',
+      lang: localized ? lang : 'en',
+      target: resolveTarget(target, data),
+    });
   });
 
   router.post('/translate', limit, async (req, res) => {

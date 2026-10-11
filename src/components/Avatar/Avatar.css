@@ -344,6 +344,16 @@
     }
 }
 
+/* Briefly rings the part of the page an answer was about. */
+.avatar-spotlight {
+    animation: avatar-spotlight 2.5s ease-out;
+}
+
+@keyframes avatar-spotlight {
+    0%, 60% { box-shadow: 0 0 0 3px var(--primary-color), 0 0 24px rgba(220, 38, 38, 0.45); }
+    100% { box-shadow: 0 0 0 3px transparent; }
+}
+
 @keyframes avatar-idle {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-4px); }
@@ -382,6 +392,11 @@
     .avatar-panel,
     .avatar-icon-btn.is-listening {
         animation: none !important;
+    }
+
+    .avatar-spotlight {
+        animation: none;
+        box-shadow: 0 0 0 3px var(--primary-color);
     }
 
     /* Keep a static cue that the avatar is talking. */

@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import type { Profile } from '../../types';
-import { FALLBACK_CONFIG, askAvatar, fetchAvatarConfig, translateText, type AvatarConfig } from './api';
+import type { ViewId } from '../../hooks/useActiveView';
+import {
+  FALLBACK_CONFIG,
+  askAvatar,
+  fetchAvatarConfig,
+  translateText,
+  type AvatarConfig,
+  type SiteTarget,
+} from './api';
 import { onNarrationRequest } from './avatarBus';
 import { createRecognizer, isSttSupported, isTtsSupported, speak, stopSpeaking, type Recognizer } from './speech';
 import './Avatar.css';
@@ -15,6 +23,10 @@ interface Message {
 
 interface AvatarWidgetProps {
   profile: Pick<Profile, 'name' | 'image'>;
+  /** The view currently shown, so answers can tell whether the visitor moved on. */
+  view?: ViewId;
+  /** Opens a view; answers use it to show the part of the site they are about. */
+  onNavigate?: (view: ViewId) => void;
 }
 
 /** Remembers "Hide assistant" for the rest of the visit only. */
@@ -39,6 +51,38 @@ function writeHidden(hidden: boolean): void {
 
 const RTL_LANGUAGES = new Set(['ar']);
 
+const SPOTLIGHT_CLASS = 'avatar-spotlight';
+const SPOTLIGHT_MS = 2500;
+/** How long to wait for a freshly opened view to render the anchor element. */
+const ANCHOR_WAIT_MS = 1500;
+
+/**
+ * Scroll the element with id `anchor` into view and highlight it briefly.
+ *
+ * The element may not exist yet (its view is still rendering), so poll for it.
+ * Once found, scroll on a short delay: opening a view resets its scroll
+ * position in an effect, which would otherwise undo this scroll.
+ */
+function spotlight(anchor: string): void {
+  const deadline = performance.now() + ANCHOR_WAIT_MS;
+  const find = () => {
+    const element = document.getElementById(anchor);
+    if (!element) {
+      if (performance.now() < deadline) requestAnimationFrame(find);
+      return;
+    }
+    window.setTimeout(() => {
+      const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      // Centering an element taller than the screen would hide its heading.
+      const tall = element.getBoundingClientRect().height > window.innerHeight * 0.6;
+      element.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: tall ? 'start' : 'center' });
+      element.classList.add(SPOTLIGHT_CLASS);
+      window.setTimeout(() => element.classList.remove(SPOTLIGHT_CLASS), SPOTLIGHT_MS);
+    }, 100);
+  };
+  requestAnimationFrame(find);
+}
+
 function greetingFor(name: string): string {
   const first = name.split(' ')[0];
   return `Hi! I'm the virtual assistant for ${name}. Ask me about ${first}'s projects, experience, skills, or how to get in touch.`;
@@ -50,7 +94,7 @@ function greetingFor(name: string): string {
  * Audio is strictly opt-in: nothing is spoken until the visitor presses Play
  * (or a project's Listen button), and Mute stops it again.
  */
-export default function AvatarWidget({ profile }: AvatarWidgetProps) {
+export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidgetProps) {
   const first = profile.name.split(' ')[0];
   const greeting = greetingFor(profile.name);
 
@@ -76,6 +120,9 @@ export default function AvatarWidget({ profile }: AvatarWidgetProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
+  // Read after an await, so it must reflect the latest render, not the one that asked.
+  const viewRef = useRef(view);
+  viewRef.current = view;
 
   const tts = isTtsSupported();
   const stt = isSttSupported();
@@ -146,6 +193,15 @@ export default function AvatarWidget({ profile }: AvatarWidgetProps) {
     [say]
   );
 
+  const showTarget = useCallback(
+    (target: SiteTarget) => {
+      // Re-opening the current view would reset its scroll; only anchors need to move.
+      if (target.view !== viewRef.current) onNavigate?.(target.view);
+      if (target.anchor) spotlight(target.anchor);
+    },
+    [onNavigate]
+  );
+
   const ask = useCallback(
     async (question: string) => {
       const text = question.trim();
@@ -153,9 +209,12 @@ export default function AvatarWidget({ profile }: AvatarWidgetProps) {
       setInput('');
       addMessage('user', text, lang);
       setPending(true);
+      const askedFrom = viewRef.current;
       try {
         const reply = await askAvatar(text, lang);
         addMessage('assistant', reply.text, reply.lang);
+        // If the visitor opened another view while waiting, don't pull them away.
+        if (reply.target && viewRef.current === askedFrom) showTarget(reply.target);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Something went wrong.';
         addMessage('assistant', `Sorry, I couldn't answer that: ${message}`, 'en', { voice: false });
@@ -163,7 +222,7 @@ export default function AvatarWidget({ profile }: AvatarWidgetProps) {
         setPending(false);
       }
     },
-    [addMessage, lang, pending]
+    [addMessage, lang, pending, showTarget]
   );
 
   // Project cards ask for narration through the bus. Pressing Listen is an

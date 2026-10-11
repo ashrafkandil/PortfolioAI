@@ -1,3 +1,5 @@
+import type { ViewId } from '../../hooks/useActiveView';
+
 export interface AvatarLanguage {
   code: string;
   label: string;
@@ -42,12 +44,22 @@ export async function fetchAvatarConfig(): Promise<AvatarConfig> {
   return response.json() as Promise<AvatarConfig>;
 }
 
-export async function askAvatar(question: string, lang: string): Promise<LocalizedText> {
-  const { answer, lang: answered } = await post<{ answer: string; lang: string }>('/api/avatar/query', {
+/** Where on the site an answer is about: a view, optionally an element id inside it. */
+export interface SiteTarget {
+  view: ViewId;
+  anchor?: string;
+}
+
+export interface AvatarReply extends LocalizedText {
+  target: SiteTarget | null;
+}
+
+export async function askAvatar(question: string, lang: string): Promise<AvatarReply> {
+  const reply = await post<{ answer: string; lang: string; target?: SiteTarget | null }>('/api/avatar/query', {
     question,
     lang,
   });
-  return { text: answer, lang: answered };
+  return { text: reply.answer, lang: reply.lang, target: reply.target ?? null };
 }
 
 export async function translateText(text: string, lang: string): Promise<LocalizedText> {

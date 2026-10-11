@@ -86,7 +86,7 @@ export default function App() {
           ))}
         {data && <Footer profile={data.profile} social={data.social} />}
       </main>
-      {data && <AvatarWidget profile={data.profile} />}
+      {data && <AvatarWidget profile={data.profile} view={view} onNavigate={navigate} />}
     </div>
   );
 }

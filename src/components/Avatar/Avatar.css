@@ -18,6 +18,41 @@
     pointer-events: auto;
 }
 
+/* Intro: on first paint the avatar flies in from the center of the screen to
+   its bottom-right corner, with an "AI assistance" balloon riding along. The
+   JS drops `.is-intro` once the flight ends (see INTRO_MS). */
+.avatar-widget.is-intro {
+    animation: avatar-intro-flight 2.6s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+/* Taken out of flow so the widget's box stays launcher-sized: that keeps the
+   transform's center aligned with the launcher during the flight. */
+.avatar-intro-balloon {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 14px);
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    animation: avatar-intro-balloon-in 0.35s ease-out both;
+}
+
+.avatar-intro-balloon::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 18px;
+    border: 6px solid transparent;
+    border-top-color: var(--primary-color);
+}
+
 /* Launcher */
 
 .avatar-launcher {
@@ -436,6 +471,32 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Moves the whole widget from the viewport center to its natural bottom-right
+   spot, fading in near the start so it feels like an arrival. The start offset
+   adds back the corner gap and half the launcher so the avatar's own center
+   lands on the screen center (not its top-left corner). */
+@keyframes avatar-intro-flight {
+    0% {
+        transform: translate(
+            calc(-50vw + var(--avatar-gap) + var(--avatar-launcher-size) / 2),
+            calc(-50vh + var(--avatar-gap) + var(--avatar-launcher-size) / 2)
+        );
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes avatar-intro-balloon-in {
+    from { opacity: 0; transform: translateY(6px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .avatar-launcher,
     .avatar-launcher::after,
@@ -444,6 +505,12 @@
     .avatar-panel,
     .avatar-bubble,
     .avatar-icon-btn.is-listening {
+        animation: none !important;
+    }
+
+    /* Skip the flight; just show the avatar in place. */
+    .avatar-widget.is-intro,
+    .avatar-intro-balloon {
         animation: none !important;
     }
 

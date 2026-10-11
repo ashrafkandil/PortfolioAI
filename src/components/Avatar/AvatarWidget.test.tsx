@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AvatarWidget from './AvatarWidget';
 import { requestNarration } from './avatarBus';
-import { pickVoice } from './speech';
+import { applyPronunciation, pickVoice } from './speech';
 
 const profile = { name: 'Ashraf Kandil', image: 'images/avatar.svg' };
 
@@ -216,6 +216,16 @@ describe('AvatarWidget', () => {
 
     expect(screen.getByText('Project X. It does things.')).toBeTruthy();
     expect(spokenTexts()).toContain('Project X. It does things.');
+  });
+});
+
+describe('applyPronunciation', () => {
+  it('respells the last name so TTS says the long "ee"', () => {
+    expect(applyPronunciation('Ashraf Kandil built this')).toBe('Ashraf Kan-Deel built this');
+  });
+
+  it('matches case-insensitively without touching other words', () => {
+    expect(applyPronunciation('kandil, Kandil, and kandils')).toBe('Kan-Deel, Kan-Deel, and kandils');
   });
 });
 

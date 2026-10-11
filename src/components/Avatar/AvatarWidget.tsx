@@ -58,6 +58,8 @@ const BUBBLE_BASE_MS = 6000;
 const BUBBLE_MS_PER_CHAR = 50;
 /** How long to wait for a freshly opened view to render the anchor element. */
 const ANCHOR_WAIT_MS = 1500;
+/** Length of the intro flight from screen center to the corner (matches the CSS). */
+const INTRO_MS = 2600;
 
 /**
  * Scroll the element with id `anchor` into view and highlight it briefly.
@@ -115,6 +117,8 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   const [input, setInput] = useState('');
   // The latest answer, shown beside the launcher after the panel collapses.
   const [bubble, setBubble] = useState<{ text: string; lang: string } | null>(null);
+  // Intro: the avatar flies in from the center of the screen on first paint.
+  const [intro, setIntro] = useState(true);
 
   const nextId = useRef(1);
   // Async replies arrive after renders; they must see the current audio choice.
@@ -158,6 +162,15 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [messages, pending]);
+
+  // Play the center-to-corner entrance once, then drop the intro styling so the
+  // launcher keeps its normal idle float and hover effects.
+  useEffect(() => {
+    if (!intro) return;
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const timer = window.setTimeout(() => setIntro(false), reduceMotion ? 0 : INTRO_MS);
+    return () => window.clearTimeout(timer);
+  }, [intro]);
 
   // Keep the bubble up while its answer is being spoken, then give time to read it.
   useEffect(() => {
@@ -368,7 +381,10 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
           : 'Voice off';
 
   return (
-    <div className={`avatar-widget${open ? ' is-open' : ''}`}>
+    <div className={`avatar-widget${open ? ' is-open' : ''}${intro ? ' is-intro' : ''}`}>
+      {intro && (
+        <div className="avatar-intro-balloon">AI assistance</div>
+      )}
       {open && (
         <div
           ref={panelRef}

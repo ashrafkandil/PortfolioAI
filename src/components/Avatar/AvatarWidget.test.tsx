@@ -123,6 +123,43 @@ describe('AvatarWidget', () => {
     card.remove();
   });
 
+  it('collapses to a speech bubble after navigating, so the section is visible', async () => {
+    const onNavigate = vi.fn();
+    render(<AvatarWidget profile={profile} view="home" onNavigate={onNavigate} />);
+    openPanel();
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+
+    const bubble = await screen.findByRole('status');
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(bubble.textContent).toContain('Answer to: What projects');
+    // Focus was inside the panel, so it moves to the launcher instead of <body>.
+    expect(document.activeElement?.getAttribute('aria-label')).toBe("Open Ashraf's assistant");
+
+    // Clicking the bubble reopens the chat with the full history.
+    fireEvent.click(screen.getByRole('button', { name: /Answer to: What projects/ }));
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.getByText('Answer to: What projects has Ashraf built?')).toBeTruthy();
+  });
+
+  it('lets the visitor dismiss the bubble', async () => {
+    render(<AvatarWidget profile={profile} view="home" onNavigate={vi.fn()} />);
+    openPanel();
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    await screen.findByRole('status');
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss answer' }));
+    expect(screen.queryByRole('status')).toBeNull();
+  });
+
+  it('keeps the panel open when an answer has nowhere to go', async () => {
+    render(<AvatarWidget profile={profile} view="home" onNavigate={vi.fn()} />);
+    openPanel();
+    fireEvent.click(screen.getByRole('button', { name: 'Contact' }));
+    await screen.findByText(/Answer to: How can I contact/);
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    expect(screen.queryByRole('status')).toBeNull();
+  });
+
   it('does not navigate when the answer has no target', async () => {
     const onNavigate = vi.fn();
     render(<AvatarWidget profile={profile} view="home" onNavigate={onNavigate} />);

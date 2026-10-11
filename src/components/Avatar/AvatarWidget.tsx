@@ -53,6 +53,9 @@ const RTL_LANGUAGES = new Set(['ar']);
 
 const SPOTLIGHT_CLASS = 'avatar-spotlight';
 const SPOTLIGHT_MS = 2500;
+/** A collapsed answer stays on screen this long (plus reading time) after it is spoken. */
+const BUBBLE_BASE_MS = 6000;
+const BUBBLE_MS_PER_CHAR = 50;
 /** How long to wait for a freshly opened view to render the anchor element. */
 const ANCHOR_WAIT_MS = 1500;
 
@@ -110,6 +113,8 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   const [pending, setPending] = useState(false);
   const [listening, setListening] = useState(false);
   const [input, setInput] = useState('');
+  // The latest answer, shown beside the launcher after the panel collapses.
+  const [bubble, setBubble] = useState<{ text: string; lang: string } | null>(null);
 
   const nextId = useRef(1);
   // Async replies arrive after renders; they must see the current audio choice.
@@ -117,6 +122,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   const recognizerRef = useRef<Recognizer | null>(null);
   const focusInputOnOpen = useRef(false);
   const launcherRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
@@ -152,6 +158,16 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [messages, pending]);
+
+  // Keep the bubble up while its answer is being spoken, then give time to read it.
+  useEffect(() => {
+    if (!bubble || speaking) return;
+    const timer = window.setTimeout(
+      () => setBubble(null),
+      BUBBLE_BASE_MS + bubble.text.length * BUBBLE_MS_PER_CHAR
+    );
+    return () => window.clearTimeout(timer);
+  }, [bubble, speaking]);
 
   useEffect(() => {
     if (open && focusInputOnOpen.current) {
@@ -202,6 +218,18 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
     [onNavigate]
   );
 
+  /**
+   * Get the panel out of the way so the visitor sees the section it just
+   * opened. Speech keeps going; the answer stays readable in the bubble.
+   */
+  const minimize = useCallback((text: string, code: string) => {
+    // Focus would otherwise fall back to <body> when the panel unmounts.
+    const hadFocus = panelRef.current?.contains(document.activeElement) ?? false;
+    setOpen(false);
+    setBubble({ text, lang: code });
+    if (hadFocus) launcherRef.current?.focus();
+  }, []);
+
   const ask = useCallback(
     async (question: string) => {
       const text = question.trim();
@@ -214,7 +242,10 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
         const reply = await askAvatar(text, lang);
         addMessage('assistant', reply.text, reply.lang);
         // If the visitor opened another view while waiting, don't pull them away.
-        if (reply.target && viewRef.current === askedFrom) showTarget(reply.target);
+        if (reply.target && viewRef.current === askedFrom) {
+          showTarget(reply.target);
+          minimize(reply.text, reply.lang);
+        }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Something went wrong.';
         addMessage('assistant', `Sorry, I couldn't answer that: ${message}`, 'en', { voice: false });
@@ -222,7 +253,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
         setPending(false);
       }
     },
-    [addMessage, lang, pending, showTarget]
+    [addMessage, lang, minimize, pending, showTarget]
   );
 
   // Project cards ask for narration through the bus. Pressing Listen is an
@@ -232,6 +263,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
       onNarrationRequest(async (text) => {
         writeHidden(false);
         setHidden(false);
+        setBubble(null);
         setOpen(true);
         setAudio(true);
         const localized = await translateText(text, lang).catch(() => ({ text, lang: 'en' }));
@@ -294,13 +326,15 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
     launcherRef.current?.focus();
   };
 
-  const toggleOpen = () => {
-    if (open) {
-      closePanel();
-      return;
-    }
+  const openPanel = () => {
     focusInputOnOpen.current = true;
+    setBubble(null);
     setOpen(true);
+  };
+
+  const toggleOpen = () => {
+    if (open) closePanel();
+    else openPanel();
   };
 
   const hide = () => {
@@ -337,6 +371,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
     <div className={`avatar-widget${open ? ' is-open' : ''}`}>
       {open && (
         <div
+          ref={panelRef}
           id={panelId}
           className="avatar-panel"
           role="dialog"
@@ -453,6 +488,29 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
 
           <button type="button" className="avatar-hide" onClick={hide}>
             Hide assistant for this visit
+          </button>
+        </div>
+      )}
+
+      {!open && bubble && (
+        <div className="avatar-bubble" role="status">
+          <button
+            type="button"
+            className="avatar-bubble-text"
+            onClick={openPanel}
+            title="Open the chat"
+            lang={bubble.lang}
+            dir={RTL_LANGUAGES.has(bubble.lang) ? 'rtl' : undefined}
+          >
+            {bubble.text}
+          </button>
+          <button
+            type="button"
+            className="avatar-bubble-close"
+            onClick={() => setBubble(null)}
+            aria-label="Dismiss answer"
+          >
+            <i className="fa-solid fa-xmark" aria-hidden="true" />
           </button>
         </div>
       )}

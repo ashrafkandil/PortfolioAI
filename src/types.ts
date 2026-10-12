@@ -59,5 +59,7 @@ export interface SiteData {
   about: About;
   experience: ExperienceItem[];
   projects: Project[];
+  /** Projects for the Personal page; a separate list backed by its own tables. */
+  personalProjects: Project[];
   formEndpoint: string;
 }

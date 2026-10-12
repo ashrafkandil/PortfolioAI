@@ -108,6 +108,38 @@ CREATE TABLE IF NOT EXISTS project_links (
   sort INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS personal_projects (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  key TEXT NOT NULL UNIQUE,
+  icon TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS personal_project_features (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL REFERENCES personal_projects(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS personal_project_tech (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL REFERENCES personal_projects(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS personal_project_links (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL REFERENCES personal_projects(id) ON DELETE CASCADE,
+  label TEXT NOT NULL,
+  icon TEXT NOT NULL,
+  url TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
@@ -116,6 +148,13 @@ CREATE TABLE IF NOT EXISTS messages (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 `);
+
+// CREATE TABLE IF NOT EXISTS does not add columns to a table that already exists,
+// so databases created before the status flag need it added explicitly.
+const socialColumns = db.prepare('PRAGMA table_info(social_links)').all();
+if (!socialColumns.some((column) => column.name === 'is_active')) {
+  db.exec('ALTER TABLE social_links ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1));');
+}
 
 export function saveMessage({ name, email, message }) {
   db.prepare('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)').run(name, email, message);
@@ -126,7 +165,7 @@ export function getSiteData() {
   if (!profileRow) return null;
 
   const social = db
-    .prepare('SELECT platform, icon, url FROM social_links ORDER BY sort, id')
+    .prepare('SELECT platform, icon, url FROM social_links WHERE is_active = 1 ORDER BY sort, id')
     .all()
     .map((r) => ({ platform: r.platform, icon: r.icon, url: r.url }));
 
@@ -173,6 +212,25 @@ export function getSiteData() {
       .map((r) => ({ label: r.label, icon: r.icon, url: r.url })),
   }));
 
+  const personalProjects = db.prepare('SELECT * FROM personal_projects ORDER BY sort, id').all().map((row) => ({
+    id: row.key,
+    icon: row.icon,
+    title: row.title,
+    description: row.description,
+    features: db
+      .prepare('SELECT text FROM personal_project_features WHERE project_id = ? ORDER BY sort, id')
+      .all(row.id)
+      .map((r) => r.text),
+    tech: db
+      .prepare('SELECT name FROM personal_project_tech WHERE project_id = ? ORDER BY sort, id')
+      .all(row.id)
+      .map((r) => r.name),
+    links: db
+      .prepare('SELECT label, icon, url FROM personal_project_links WHERE project_id = ? ORDER BY sort, id')
+      .all(row.id)
+      .map((r) => ({ label: r.label, icon: r.icon, url: r.url })),
+  }));
+
   return {
     profile: {
       siteName: profileRow.site_name,
@@ -189,6 +247,7 @@ export function getSiteData() {
     about: { bio, skills },
     experience,
     projects,
+    personalProjects,
     formEndpoint: profileRow.form_endpoint,
   };
 }

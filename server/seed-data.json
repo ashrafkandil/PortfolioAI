@@ -2,11 +2,11 @@
   "profile": {
     "siteName": "Ashraf Kandil Portfolio",
     "name": "Ashraf Kandil",
-    "role": "Senior Software Engineer & Full-Stack Developer",
-    "tagline": "Crafting robust, scalable solutions with 10+ years of experience in software development",
-    "shortBio": "Senior software engineer passionate about building scalable cloud-native products and leading high-performing development teams.",
-    "image": "images/avatar.svg",
-    "email": "ashraf.kandil@email.com",
+    "role": "Lead Software Engineer & Software Architect",
+    "tagline": "Designing and delivering scalable, enterprise-grade software with 30+ years of experience",
+    "shortBio": "Lead software engineer and architect with 30+ years of experience designing scalable, enterprise-grade .NET, web, and mobile solutions, from architecture to hands-on full-stack development.",
+    "image": "images/Me_1.png",
+    "email": "ashraf.kandil@gmail.com",
     "phone": "+1 (555) 123-4567",
     "location": "San Francisco, CA"
   },
@@ -18,8 +18,8 @@
   ],
   "about": {
     "bio": [
-      "I'm a passionate software engineer with extensive experience in building enterprise-level applications and innovative solutions. My expertise spans across multiple programming languages, frameworks, and cloud technologies.",
-      "I specialize in creating efficient, maintainable code and leading development teams to deliver exceptional results. I'm constantly learning and adapting to new technologies to stay at the forefront of software development."
+      "Over 30 years, I've designed, architected, and built enterprise-grade software across financial services, insurance, and other complex business domains. My expertise spans the full software development lifecycle, from system architecture and technical design to hands-on development, performance optimization, and production support. I specialize in building scalable, secure, maintainable, and high-performance applications using modern .NET technologies, C#, ASP.NET Core, distributed systems, web technologies, and relational and NoSQL databases. With deep experience in enterprise application architecture, design patterns, software modernization, and web and mobile technologies, I combine architectural thinking with strong engineering execution to deliver reliable solutions that address complex business challenges. I'm equally comfortable defining technical direction, refactoring legacy systems, optimizing application performance, and working hands-on with code. Throughout my career, I've delivered reliable, well-engineered solutions for demanding business environments.",
+      "I've contributed to mission-critical enterprise platforms, collaborated with cross-functional teams, established engineering standards, and mentored developers. My approach emphasizes clean architecture, maintainable code, engineering best practices, and pragmatic technical decisions that balance business needs with long-term scalability. I'm passionate about software craftsmanship, solving complex technical problems, and designing robust software architectures that evolve with changing business requirements and emerging technologies."
     ],
     "skills": [
       {
@@ -39,56 +39,130 @@
   "formEndpoint": "/api/contact",
   "experience": [
     {
-      "id": "senior-engineer",
-      "title": "Senior Software Engineer",
-      "period": "2020 - Present",
-      "company": "Tech Solutions Inc. | San Francisco, CA",
+      "id": "rbc-capital-markets",
+      "title": "Senior .NET Developer",
+      "period": "July 2014 – Present",
+      "company": "RBC Capital Markets | Greater Toronto Area, Canada",
       "duties": [
-        "Lead a team of 8 developers in designing and implementing microservices architecture for enterprise applications",
-        "Architected and deployed cloud-native solutions using AWS services (EC2, S3, Lambda, RDS)",
-        "Implemented CI/CD pipelines using Jenkins and Docker, reducing deployment time by 60%",
-        "Mentored junior developers and conducted code reviews to maintain high code quality standards"
+        "Experience details to be added."
       ],
-      "tech": ["Java", "Spring Boot", "React", "PostgreSQL", "AWS", "Docker", "Kubernetes", "Jenkins", "Redis"]
+      "tech": []
     },
     {
-      "id": "fullstack-developer",
-      "title": "Full-Stack Developer",
-      "period": "2017 - 2020",
-      "company": "Digital Innovations Corp. | New York, NY",
+      "id": "citi-lead",
+      "title": "Lead .NET Developer – AVP",
+      "period": "January 2014 – July 2014",
+      "company": "Citi | Mississauga, Ontario",
       "duties": [
-        "Developed and maintained responsive web applications serving 100K+ daily active users",
-        "Designed RESTful APIs and integrated third-party services for payment processing and analytics",
-        "Optimized database queries and implemented caching strategies, improving response time by 45%",
-        "Collaborated with UX designers to implement pixel-perfect, accessible user interfaces"
+        "Led and contributed hands-on to the development of FUSION, an enterprise .NET application supporting real-time futures execution, automated trade workflows, client allocations, and clearing operations within an Agile/Scrum environment.",
+        "Designed and implemented operational dashboards, management summaries, and trade reporting functionality using C#, .NET, WPF, SQL Server, and DevExpress.",
+        "Engineered an asynchronous, multithreaded export module supporting Excel, CSV, and XML formats for order and trade data.",
+        "Refactored and optimized application components, upgraded the UI architecture to PRISM 4, and implemented MVVM patterns to improve maintainability and code organization.",
+        "Established development standards, conducted code reviews, mentored developers, and collaborated with business stakeholders and cross-functional IT teams to deliver technical solutions."
       ],
-      "tech": ["JavaScript", "Node.js", "Express", "Vue.js", "MongoDB", "MySQL", "Git", "Stripe API"]
+      "tech": ["C#", ".NET", "WPF", "SQL Server", "DevExpress", "PRISM 4", "MVVM"]
     },
     {
-      "id": "software-developer",
-      "title": "Software Developer",
-      "period": "2015 - 2017",
-      "company": "StartupHub Technologies | Austin, TX",
+      "id": "citi-senior",
+      "title": "Senior .NET Developer – AVP",
+      "period": "August 2013 – December 2013",
+      "company": "Citi | Mississauga, Ontario",
       "duties": [
-        "Built mobile applications for iOS and Android using React Native and native frameworks",
-        "Implemented automated testing frameworks, achieving 85% code coverage",
-        "Participated in agile development process with daily standups and sprint planning",
-        "Integrated analytics and crash reporting tools for better application monitoring"
+        "Led and contributed hands-on to the development of FUSION, an enterprise .NET application supporting real-time futures execution, automated trade workflows, client allocations, and clearing operations within an Agile/Scrum environment.",
+        "Designed and implemented operational dashboards, management summaries, and trade reporting functionality using C#, .NET, WPF, SQL Server, and DevExpress.",
+        "Engineered an asynchronous, multithreaded export module supporting Excel, CSV, and XML formats for order and trade data.",
+        "Refactored and optimized application components, upgraded the UI architecture to PRISM 4, and implemented MVVM patterns to improve maintainability and code organization.",
+        "Established development standards, conducted code reviews, mentored developers, and collaborated with business stakeholders and cross-functional IT teams to deliver technical solutions."
       ],
-      "tech": ["React Native", "Java", "Swift", "Android Studio", "Xcode", "Firebase", "Jest", "Git"]
+      "tech": ["C#", ".NET", "WPF", "SQL Server", "DevExpress", "PRISM 4", "MVVM"]
     },
     {
-      "id": "junior-developer",
-      "title": "Junior Developer",
-      "period": "2013 - 2015",
-      "company": "WebDev Agency | Boston, MA",
+      "id": "livingston-international",
+      "title": "Senior / Lead .NET Application Developer",
+      "period": "October 2011 – July 2013",
+      "company": "Livingston International | Greater Toronto Area, Canada",
       "duties": [
-        "Developed custom WordPress themes and plugins for client websites",
-        "Created responsive email templates and landing pages with high conversion rates",
-        "Assisted in database design and optimization for web applications",
-        "Provided technical support and maintenance for existing client projects"
+        "Developed and enhanced BOSS, an enterprise customs brokerage application, using C#, WPF, WCF, Entity Framework, SQL Server 2008/2012, Telerik, and DevExpress.",
+        "Designed and implemented application modules using MVP and MVVM patterns, applying established software engineering practices and coding standards.",
+        "Translated business requirements into technical designs and application enhancements in collaboration with business stakeholders and IT teams.",
+        "Investigated system issues, supported application maintenance, mentored developers, and contributed to technical interviews and hiring recommendations."
       ],
-      "tech": ["PHP", "WordPress", "JavaScript", "jQuery", "HTML5", "CSS3", "MySQL"]
+      "tech": ["C#", "WPF", "WCF", "Entity Framework", "SQL Server", "Telerik", "DevExpress", "MVP", "MVVM"]
+    },
+    {
+      "id": "questrade",
+      "title": "Senior .NET Developer",
+      "period": "May 2011 – September 2011",
+      "company": "Questrade Inc. | Toronto, Ontario",
+      "duties": [
+        "Developed client-facing and internal CRM applications supporting trading account administration, client profiles, and service request management.",
+        "Implemented application features and services using C#, .NET 3.5/4.0, ASP.NET, WCF, JavaScript, jQuery, LINQ, TPL, HTML, XML, SQL Server, and Sybase.",
+        "Enhanced application performance, scalability, and security through code optimization, troubleshooting, and configuration improvements.",
+        "Maintained web applications and services, resolving technical issues and tuning database components."
+      ],
+      "tech": ["C#", ".NET", "ASP.NET", "WCF", "JavaScript", "jQuery", "LINQ", "TPL", "HTML", "XML", "SQL Server", "Sybase"]
+    },
+    {
+      "id": "sungard",
+      "title": "Senior Technical Analyst / Lead Developer",
+      "period": "March 2007 – April 2011",
+      "company": "SunGard",
+      "duties": [
+        "Developed and maintained iWorks Enterprise Incentive Management (EIM/FASAT), an enterprise platform supporting insurance distribution and compensation management across multiple product lines.",
+        "Designed and implemented application functionality using C#, VB.NET, ASP.NET, WCF, VB6, COM+, T-SQL, SQL Server, SSIS, and XML.",
+        "Tuned application performance and improved security across web and multi-tier components for client implementations.",
+        "Produced technical specifications, design documents, and unit-testing documentation to support implementation quality and maintainability.",
+        "Supported deployments, production troubleshooting, and technical issue resolution while assisting other developers."
+      ],
+      "tech": ["C#", "VB.NET", "ASP.NET", "WCF", "VB6", "COM+", "T-SQL", "SQL Server", "SSIS", "XML"]
+    },
+    {
+      "id": "rbc-life-insurance",
+      "title": "Technical Systems Analyst / Senior Technical Systems Analyst",
+      "period": "May 2001 – June 2007",
+      "company": "RBC Life Insurance",
+      "duties": [
+        "Enhanced BEDROCK, an enterprise life insurance administration system, delivering new product functionality through technical design, application development, testing, and database schema changes.",
+        "Designed and developed a credit-card transaction processing utility using C#, .NET, XML, T-SQL, and SQL Server to extract, upload, and download transaction data.",
+        "Implemented application functionality using C#, .NET, Delphi, COM+, and SQL Server, translating business requirements into technical solutions.",
+        "Created technical specifications, database designs, and unit-testing documentation in accordance with SDLC, CMM, and IT standards.",
+        "Conducted code reviews, mentored developers, and participated in 24/7 production support, troubleshooting, and system tuning."
+      ],
+      "tech": ["C#", ".NET", "Delphi", "COM+", "SQL Server", "XML", "T-SQL"]
+    },
+    {
+      "id": "optik-kr",
+      "title": "Software Developer / Senior Software Developer Analyst",
+      "period": "March 2000 – January 2001",
+      "company": "Optik K&R Inc.",
+      "duties": [
+        "Redesigned and optimized BRAINS, a client-server business application supporting sales, purchasing, manufacturing, quality control, and accounting.",
+        "Developed and maintained application functionality using Delphi 5 and SQL; administered SQL Server environments, including installation, configuration, security, and performance monitoring."
+      ],
+      "tech": ["Delphi 5", "SQL", "SQL Server"]
+    },
+    {
+      "id": "ministry-of-education-bahrain",
+      "title": "Software Developer / Analyst",
+      "period": "October 1993 – August 1999",
+      "company": "Ministry of Education, Bahrain",
+      "duties": [
+        "Designed, developed, tested, and supported client-server applications for student records and human resources using FoxPro, Delphi, SQL, and Oracle.",
+        "Contributed to database design, unit testing, application deployment, troubleshooting, and end-user technical support.",
+        "Delivered computer training and supported operating systems, desktop applications, and school computer laboratories."
+      ],
+      "tech": ["FoxPro", "Delphi", "SQL", "Oracle"]
+    },
+    {
+      "id": "technical-air-conditioning",
+      "title": "Senior Software Developer / Analyst (Part-Time)",
+      "period": "October 1996 – July 1999",
+      "company": "Technical Air Conditioning Est., Bahrain",
+      "duties": [
+        "Designed database structures and developed accounting and personnel applications using Delphi 4 and SQL Server.",
+        "Translated business requirements into application functionality and provided testing, maintenance, troubleshooting, and production support."
+      ],
+      "tech": ["Delphi 4", "SQL Server"]
     }
   ],
   "projects": [
@@ -192,6 +266,60 @@
       "links": [
         { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://security-demo.example.com" },
         { "label": "Documentation", "icon": "fas fa-file-alt", "url": "https://example.com/docs/security-monitor" }
+      ]
+    }
+  ],
+  "personalProjects": [
+    {
+      "id": "crazycakes-ai",
+      "icon": "fas fa-cake-candles",
+      "title": "Marwa Crazy Cakes — AI Bakery Website",
+      "description": "A production-ready marketing site for Marwa Crazy Cakes, a custom bakery in Milton, Ontario, built with the Next.js App Router. All copy, gallery, testimonials, pricing and event types are driven by a seeded SQLite database, and a free talking AI avatar named Sprinkles — powered by Google Gemini — answers visitor questions out loud in English or Arabic, jumps to the right gallery category, and pre-fills the quote form.",
+      "features": [
+        "Talking AI avatar (Sprinkles) with voice input and speech output in English and Arabic, on Google Gemini's free tier",
+        "SQLite-driven content: gallery categories, images and videos, testimonials, pricing and event types, all seedable via a script",
+        "Gallery with category filtering, pagination, lightbox and video playback, plus reviews, pricing and quote pages",
+        "Next.js App Router UI styled with Tailwind CSS 4 and shadcn/ui, with ESLint and Prettier tooling"
+      ],
+      "tech": ["Next.js", "React 19", "TypeScript", "Tailwind CSS 4", "shadcn/ui", "SQLite", "Google Gemini"],
+      "links": [
+        { "label": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/CrazyCakesAI" },
+        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://crazycakesai.example.com" }
+      ]
+    },
+    {
+      "id": "crazycakes-mobile",
+      "icon": "fas fa-mobile-alt",
+      "title": "Marwa Crazy Cakes — Mobile App",
+      "description": "The official iOS and Android companion app for the Marwa Crazy Cakes website, built with Expo and React Native in TypeScript. It mirrors the full web experience — hero carousel, gallery, reviews, pricing and contact — with an adaptive layout that switches from a phone tab bar to a tablet sidebar, and keeps all content on-device in expo-sqlite so the app works offline.",
+      "features": [
+        "Adaptive phone/tablet UI: bottom tab bar on phones, 240px sidebar on tablets and landscape (≥720dp)",
+        "On-device expo-sqlite database seeded from the live website, with an npm script that re-syncs content and media",
+        "Hero carousel with autoplay, category gallery with full-screen image/video players, reviews with ratings, pricing table and validated contact form",
+        "Shared design tokens, Google fonts and watermarked brand assets matching the website pixel for pixel"
+      ],
+      "tech": ["React Native", "Expo", "TypeScript", "expo-sqlite", "expo-image", "expo-video", "Google Fonts"],
+      "links": [
+        { "label": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/CrazyCakesMobile" },
+        { "label": "Play Store", "icon": "fab fa-google-play", "url": "https://play.google.com/store/apps/details?id=com.example.crazycakes" },
+        { "label": "App Store", "icon": "fab fa-app-store", "url": "https://apps.apple.com/app/id0000000000" }
+      ]
+    },
+    {
+      "id": "portfolio-ai",
+      "icon": "fas fa-robot",
+      "title": "PortfolioAI — AI Portfolio with Talking Avatar",
+      "description": "This portfolio site itself: a React 19 and TypeScript front end served by an Express API over a SQLite content store that is reseedable from a single JSON file. Its AI avatar uses the Web Speech API to narrate every section and project card, answers questions locally from the same seed data the pages render (with an optional LLM fallback through OpenRouter or Ollama), and keeps spoken summaries and on-screen content perfectly in sync.",
+      "features": [
+        "AI avatar with speech recognition and text-to-speech that narrates each section and project card on demand",
+        "Local keyword answer engine sourced from the same seed data the pages render, plus optional LLM fallback (OpenRouter or Ollama)",
+        "Express API over a normalized SQLite schema for profile, experience and projects, reseedable with one command",
+        "Vitest and Testing Library unit tests covering the avatar knowledge base, navigation targets and UI components"
+      ],
+      "tech": ["React 19", "TypeScript", "Vite", "Express", "SQLite", "Web Speech API", "Vitest"],
+      "links": [
+        { "label": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/PortfolioAI" },
+        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://portfolioai.example.com" }
       ]
     }
   ]

@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import type { Profile } from '../types';
+import type { Profile, SocialLink } from '../types';
+import SocialLinks from './SocialLinks';
 
 interface ContactProps {
   profile: Profile;
+  social: SocialLink[];
   formEndpoint: string;
 }
 
@@ -12,7 +14,7 @@ type Status =
   | { kind: 'success'; message: string }
   | { kind: 'error'; message: string };
 
-export default function Contact({ profile, formEndpoint }: ContactProps) {
+export default function Contact({ profile, social, formEndpoint }: ContactProps) {
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -78,6 +80,7 @@ export default function Contact({ profile, formEndpoint }: ContactProps) {
                 <span>{profile.location}</span>
               </div>
             </div>
+            <SocialLinks links={social} className="social-links contact-social" />
           </div>
           <form className="contact-form" onSubmit={handleSubmit} noValidate={false}>
             <div className="form-group">

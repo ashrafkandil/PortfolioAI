@@ -865,6 +865,10 @@ section {
     gap: 1.5rem;
 }
 
+.contact-social {
+    margin-top: 2rem;
+}
+
 .contact-item {
     display: flex;
     align-items: center;

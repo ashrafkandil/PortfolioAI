@@ -6,6 +6,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Experience from './components/Experience';
 import Projects from './components/Projects';
+import Personal from './components/Personal';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AvatarWidget from './components/Avatar/AvatarWidget';
@@ -78,9 +79,12 @@ export default function App() {
         {view === 'projects' && (
           <Projects projects={data?.projects ?? []} loading={loading} error={error} />
         )}
+        {view === 'personal' && (
+          <Personal projects={data?.personalProjects ?? []} loading={loading} error={error} />
+        )}
         {view === 'contact' &&
           (data ? (
-            <Contact profile={data.profile} formEndpoint={data.formEndpoint} />
+            <Contact profile={data.profile} social={data.social} formEndpoint={data.formEndpoint} />
           ) : (
             <StatusView message={placeholder} />
           ))}

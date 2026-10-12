@@ -10,7 +10,7 @@
 /** The technical plan caps spoken answers at two sentences. */
 export const MAX_SENTENCES = 2;
 
-/** A period after these does not end a sentence ("Tech Solutions Inc. (2020)"). */
+/** A period after these does not end a sentence ("Acme Inc. (2020)"). */
 const ABBREVIATION = /\b(inc|corp|ltd|llc|co|mr|mrs|ms|dr|st|jr|sr|vs|etc|e\.g|i\.e)\.$/i;
 
 export function limitSentences(text, max = MAX_SENTENCES) {

@@ -21,7 +21,11 @@ app.get('/api/site-data', (_req, res) => {
   // The avatar reads each card's narration aloud; build it here so the spoken
   // summary and the avatar's own answers come from the same code.
   const projects = data.projects.map((project) => ({ ...project, narration: projectNarration(project) }));
-  res.json({ ...data, projects });
+  const personalProjects = data.personalProjects.map((project) => ({
+    ...project,
+    narration: projectNarration(project),
+  }));
+  res.json({ ...data, projects, personalProjects });
 });
 
 app.use('/api/avatar', createAvatarRouter());

@@ -11,6 +11,10 @@ const tables = [
   'project_tech',
   'project_features',
   'projects',
+  'personal_project_links',
+  'personal_project_tech',
+  'personal_project_features',
+  'personal_projects',
   'experience_tech',
   'experience_duties',
   'experiences',
@@ -41,8 +45,11 @@ try {
     source.formEndpoint ?? ''
   );
 
-  const insertSocial = db.prepare('INSERT INTO social_links (platform, icon, url, sort) VALUES (?, ?, ?, ?)');
-  source.social.forEach((s, i) => insertSocial.run(s.platform, s.icon, s.url, i));
+  const insertSocial = db.prepare(
+    'INSERT INTO social_links (platform, icon, url, sort, is_active) VALUES (?, ?, ?, ?, ?)'
+  );
+  // Links are shown unless the seed entry sets "active": false.
+  source.social.forEach((s, i) => insertSocial.run(s.platform, s.icon, s.url, i, s.active === false ? 0 : 1));
 
   const insertBio = db.prepare('INSERT INTO about_bios (text, sort) VALUES (?, ?)');
   source.about.bio.forEach((t, i) => insertBio.run(t, i));
@@ -80,6 +87,30 @@ try {
     project.links.forEach((link, j) => insertProjectLink.run(id, link.label, link.icon, link.url, j));
   });
 
+  const insertPersonalProject = db.prepare(
+    'INSERT INTO personal_projects (key, icon, title, description, sort) VALUES (?, ?, ?, ?, ?)'
+  );
+  const insertPersonalFeature = db.prepare(
+    'INSERT INTO personal_project_features (project_id, text, sort) VALUES (?, ?, ?)'
+  );
+  const insertPersonalTech = db.prepare('INSERT INTO personal_project_tech (project_id, name, sort) VALUES (?, ?, ?)');
+  const insertPersonalLink = db.prepare(
+    'INSERT INTO personal_project_links (project_id, label, icon, url, sort) VALUES (?, ?, ?, ?, ?)'
+  );
+  source.personalProjects.forEach((project, i) => {
+    const { lastInsertRowid } = insertPersonalProject.run(
+      project.id,
+      project.icon,
+      project.title,
+      project.description,
+      i
+    );
+    const id = Number(lastInsertRowid);
+    project.features.forEach((feature, j) => insertPersonalFeature.run(id, feature, j));
+    project.tech.forEach((tech, j) => insertPersonalTech.run(id, tech, j));
+    project.links.forEach((link, j) => insertPersonalLink.run(id, link.label, link.icon, link.url, j));
+  });
+
   db.exec('COMMIT');
 } catch (error) {
   db.exec('ROLLBACK');
@@ -87,5 +118,5 @@ try {
 }
 
 console.log(
-  `Seeded portfolio.db: ${source.social.length} social links, ${source.experience.length} experiences, ${source.projects.length} projects.`
+  `Seeded portfolio.db: ${source.social.length} social links, ${source.experience.length} experiences, ${source.projects.length} projects, ${source.personalProjects.length} personal projects.`
 );

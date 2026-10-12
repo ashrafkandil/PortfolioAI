@@ -1,5 +1,6 @@
 import type { About, ExperienceItem, Profile, SocialLink } from '../types';
 import type { ViewId } from '../hooks/useActiveView';
+import SocialLinks from './SocialLinks';
 
 interface HeroProps {
   profile: Profile;
@@ -134,19 +135,7 @@ export default function Hero({ profile, social, about, experience, onNavigate }:
                 Get In Touch
               </a>
             </div>
-            <div className="social-links">
-              {social.map((link) => (
-                <a
-                  key={link.platform}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={link.platform}
-                >
-                  <i className={link.icon} aria-hidden="true" />
-                </a>
-              ))}
-            </div>
+            <SocialLinks links={social} className="social-links" />
           </div>
         </div>
       </div>

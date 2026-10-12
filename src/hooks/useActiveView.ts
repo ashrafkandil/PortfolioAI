@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
  * view that is loaded into the area under the bar. The list is the single
  * source of truth for both the nav links and the URL hash.
  */
-export const VIEWS = ['home', 'about', 'experience', 'projects', 'contact'] as const;
+export const VIEWS = ['home', 'about', 'experience', 'projects', 'personal', 'contact'] as const;
 
 export type ViewId = (typeof VIEWS)[number];
 

@@ -5,7 +5,7 @@ import AvatarWidget from './AvatarWidget';
 import { requestNarration } from './avatarBus';
 import { applyPronunciation, pickVoice } from './speech';
 
-const profile = { name: 'Ashraf Kandil', image: 'images/avatar.svg' };
+const profile = { name: 'Ashraf Kandil', image: 'images/Me_1.png' };
 
 class FakeUtterance {
   text: string;

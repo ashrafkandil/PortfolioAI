@@ -25,7 +25,7 @@ describe('answerLocally', () => {
   });
 
   it('treats "where did he work" as an experience question', () => {
-    expect(ask('Where did Ashraf work before?')).toContain('Tech Solutions Inc.');
+    expect(ask('Where did Ashraf work before?')).toContain('RBC Capital Markets');
   });
 
   it('confirms a known skill with where it is used', () => {
@@ -66,7 +66,7 @@ describe('navigation targets', () => {
     expect(goes('What projects has he built?')).toBe('projects');
     expect(goes('How can I contact him?')).toBe('contact');
     expect(goes('What is his experience?')).toBe('experience');
-    expect(goes('What did he do at Digital Innovations?')).toBe('experience/fullstack-developer');
+    expect(goes('What did he do at SunGard?')).toBe('experience/sungard');
     expect(goes('Does he know Django?')).toBe('skills');
     expect(goes('What are his skills?')).toBe('skills');
     expect(goes('Who is Ashraf?')).toBe('about');

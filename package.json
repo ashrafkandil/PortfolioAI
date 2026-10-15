@@ -4,13 +4,17 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n api,web \"node server/index.js\" \"vite\"",
+    "dev": "concurrently -k -n api,web \"node --env-file-if-exists=.env server/index.js\" \"vite\"",
     "dev:reset": "node scripts/free-dev-ports.mjs",
-    "server": "node server/index.js",
-    "seed": "node server/seed.js",
+    "server": "node --env-file-if-exists=.env server/index.js",
+    "seed": "node --env-file-if-exists=.env server/seed.js",
+    "seed:force": "node --env-file-if-exists=.env server/seed.js --force",
+    "db:backup": "node scripts/backup-db.mjs",
     "build": "tsc -b && vite build",
+    "deploy:local": "npm run seed && npm run build && npm start",
     "preview": "vite preview",
-    "start": "node server/index.js"
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "test": "vitest run"
   },
   "dependencies": {
     "express": "^5.2.1",
@@ -18,11 +22,15 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "concurrently": "^10.0.5",
+    "jsdom": "^29.1.1",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vitest": "^5.0.3"
   }
 }

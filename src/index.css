@@ -158,6 +158,15 @@ body {
     justify-content: center;
 }
 
+.data-refresh-warning {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    color: #7c2d12;
+    background: #ffedd5;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
 @keyframes viewIn {
     from {
         opacity: 0;
@@ -730,6 +739,8 @@ section {
 
 .project-card-wrapper {
     display: flex;
+    /* Anchors the hover balloon that lists the project's experiences. */
+    position: relative;
 }
 
 .project-card {
@@ -746,6 +757,84 @@ section {
     transform: translateY(-10px);
     box-shadow: var(--shadow-lg);
     border-color: var(--primary-color);
+}
+
+/* Hover/focus balloon: the experiences a project belongs to. Floats above the
+   card (see the downward arrow) and never intercepts the pointer. */
+.project-experience-balloon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 0.85rem);
+    z-index: 20;
+    padding: 0.9rem 1rem;
+    background: var(--bg-dark);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    pointer-events: none;
+}
+
+.project-experience-balloon::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 2rem;
+    border: 8px solid transparent;
+    border-top-color: var(--primary-color);
+}
+
+.project-card:hover .project-experience-balloon,
+.project-card:focus-within .project-experience-balloon {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.project-experience-balloon-title {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+}
+
+.project-experience-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.project-experience-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--border-color);
+}
+
+.project-experience-role {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.project-experience-company {
+    font-size: 0.88rem;
+    color: var(--text-light);
+}
+
+.project-experience-period {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--text-light);
 }
 
 .project-header {
@@ -820,6 +909,15 @@ section {
     gap: 0.5rem;
 }
 
+/* The avatar's Listen action is a button styled like the card's links. */
+.project-listen {
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
 .project-link:hover {
     color: var(--secondary-color);
 }
@@ -854,6 +952,10 @@ section {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.contact-social {
+    margin-top: 2rem;
 }
 
 .contact-item {

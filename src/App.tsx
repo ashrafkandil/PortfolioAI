@@ -6,8 +6,10 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Experience from './components/Experience';
 import Projects from './components/Projects';
+import Personal from './components/Personal';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import AvatarWidget from './components/Avatar/AvatarWidget';
 
 /**
  * Sections that need site data cannot render before it arrives; say so instead
@@ -56,6 +58,11 @@ export default function App() {
         active={view}
         onNavigate={navigate}
       />
+      {data && error && (
+        <p className="data-refresh-warning" role="status">
+          Live data refresh failed: {error}. Showing the last loaded content and retrying.
+        </p>
+      )}
       {/* The only scrollable region: everything below the navbar lives here. */}
       <main id="main" className="view" ref={viewRef} tabIndex={-1}>
         {view === 'home' &&
@@ -72,19 +79,23 @@ export default function App() {
           ))}
         {view === 'about' && (data ? <About about={data.about} /> : <StatusView message={placeholder} />)}
         {view === 'experience' && (
-          <Experience experience={data?.experience ?? []} loading={loading} error={error} />
+          <Experience experience={data?.experience ?? []} loading={loading} error={data ? null : error} />
         )}
         {view === 'projects' && (
-          <Projects projects={data?.projects ?? []} loading={loading} error={error} />
+          <Projects projects={data?.projects ?? []} loading={loading} error={data ? null : error} />
+        )}
+        {view === 'personal' && (
+          <Personal projects={data?.personalProjects ?? []} loading={loading} error={data ? null : error} />
         )}
         {view === 'contact' &&
           (data ? (
-            <Contact profile={data.profile} formEndpoint={data.formEndpoint} />
+            <Contact profile={data.profile} social={data.social} formEndpoint={data.formEndpoint} />
           ) : (
             <StatusView message={placeholder} />
           ))}
         {data && <Footer profile={data.profile} social={data.social} />}
       </main>
+      {data && <AvatarWidget profile={data.profile} view={view} onNavigate={navigate} />}
     </div>
   );
 }

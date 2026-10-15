@@ -15,7 +15,7 @@ export default function About({ about }: AboutProps) {
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-          <div className="skills-grid">
+          <div className="skills-grid" id="skills">
             {about.skills.map((category) => (
               <div className="skill-category" key={category.title}>
                 <h3>{category.title}</h3>

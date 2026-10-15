@@ -3,3 +3,11 @@ dist
 *.local
 *.log
 server/data/
+# SQLite runtime data (default path is under server/data/; these also cover a
+# DB_PATH set elsewhere in the repo) plus WAL sidecar files.
+*.db
+*.db-shm
+*.db-wal
+.env
+.claude/settings.json
+.claude/settings.local.json

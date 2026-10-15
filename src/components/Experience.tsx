@@ -25,7 +25,7 @@ export default function Experience({ experience, loading, error }: ExperiencePro
           <div className="timeline">
             {experience.map((item) => (
               <FadeIn key={item.id}>
-                <div className="timeline-item">
+                <div className="timeline-item" id={`experience-${item.id}`}>
                   <div className="timeline-dot" aria-hidden="true" />
                   <div className="timeline-content">
                     <div className="timeline-header">

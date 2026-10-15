@@ -1,0 +1,526 @@
+/* Talking avatar: launcher pinned bottom-right, chat panel opens above it. */
+
+.avatar-widget {
+    --avatar-launcher-size: 64px;
+    --avatar-gap: 20px;
+    position: fixed;
+    right: var(--avatar-gap);
+    bottom: var(--avatar-gap);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.avatar-widget > * {
+    pointer-events: auto;
+}
+
+/* Intro: on first paint the avatar flies in from the center of the screen to
+   its bottom-right corner, with an "AI assistance" balloon riding along. The
+   JS drops `.is-intro` once the flight ends (see INTRO_MS). */
+.avatar-widget.is-intro {
+    animation: avatar-intro-flight 2.6s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+/* Taken out of flow so the widget's box stays launcher-sized: that keeps the
+   transform's center aligned with the launcher during the flight. */
+.avatar-intro-balloon {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 14px);
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    animation: avatar-intro-balloon-in 0.35s ease-out both;
+}
+
+.avatar-intro-balloon::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 18px;
+    border: 6px solid transparent;
+    border-top-color: var(--primary-color);
+}
+
+/* Launcher */
+
+.avatar-launcher {
+    position: relative;
+    width: var(--avatar-launcher-size);
+    height: var(--avatar-launcher-size);
+    padding: 0;
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    animation: avatar-idle 4s ease-in-out infinite;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.avatar-launcher img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-launcher:hover {
+    transform: scale(1.06);
+}
+
+.avatar-launcher:focus-visible,
+.avatar-icon-btn:focus-visible,
+.avatar-quick button:focus-visible,
+.avatar-hide:focus-visible,
+.avatar-lang select:focus-visible,
+.avatar-form input:focus-visible {
+    outline: 2px solid var(--text-color);
+    outline-offset: 2px;
+}
+
+/* Pulsing ring while speaking. */
+.avatar-launcher::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.avatar-launcher.is-speaking {
+    animation: none;
+}
+
+.avatar-launcher.is-speaking::after {
+    animation: avatar-pulse 1.2s ease-out infinite;
+}
+
+/* Little equalizer that stands in for lip movement. */
+.avatar-wave {
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 12px;
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: var(--primary-color);
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.avatar-wave span {
+    width: 3px;
+    height: 4px;
+    border-radius: 2px;
+    background: #fff;
+}
+
+.avatar-launcher.is-speaking .avatar-wave {
+    opacity: 1;
+}
+
+.avatar-launcher.is-speaking .avatar-wave span {
+    animation: avatar-bar 0.6s ease-in-out infinite;
+}
+
+.avatar-launcher.is-speaking .avatar-wave span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.avatar-launcher.is-speaking .avatar-wave span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* Speech bubble: the last answer, shown after the panel collapses. */
+
+.avatar-bubble {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    max-width: min(300px, calc(100vw - 2 * var(--avatar-gap)));
+    margin-right: 8px;
+    padding: 0.6rem 0.4rem 0.6rem 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    border-bottom-right-radius: 4px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    animation: avatar-panel-in 0.2s ease-out;
+}
+
+.avatar-bubble-text {
+    flex: 1;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--text-color);
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    text-align: start;
+    cursor: pointer;
+}
+
+.avatar-bubble-close {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: var(--text-light);
+    cursor: pointer;
+}
+
+.avatar-bubble-close:hover {
+    color: var(--text-color);
+}
+
+.avatar-bubble-text:focus-visible,
+.avatar-bubble-close:focus-visible {
+    outline: 2px solid var(--text-color);
+    outline-offset: 2px;
+}
+
+/* Panel */
+
+.avatar-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(360px, calc(100vw - 2 * var(--avatar-gap)));
+    max-height: min(540px, calc(100dvh - var(--avatar-launcher-size) - 3 * var(--avatar-gap)));
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--bg-dark);
+    color: var(--text-color);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: avatar-panel-in 0.2s ease-out;
+}
+
+.avatar-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg);
+}
+
+.avatar-panel-title {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.avatar-status {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.avatar-panel-actions {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.avatar-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.avatar-icon-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.avatar-icon-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.avatar-icon-btn.is-listening {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: #fff;
+    animation: avatar-pulse-bg 1.2s ease-in-out infinite;
+}
+
+.avatar-lang {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.avatar-lang select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font: inherit;
+}
+
+.avatar-log {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 120px;
+    padding: 0.9rem;
+    overflow-y: auto;
+}
+
+.avatar-msg {
+    max-width: 85%;
+    padding: 0.55rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.avatar-msg-assistant {
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    background: var(--card-bg);
+}
+
+.avatar-msg-user {
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    background: var(--secondary-color);
+    color: #fff;
+}
+
+.avatar-typing {
+    display: flex;
+    gap: 4px;
+}
+
+.avatar-typing span[aria-hidden] {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-light);
+    animation: avatar-dot 1s ease-in-out infinite;
+}
+
+.avatar-typing span[aria-hidden]:nth-of-type(3) {
+    animation-delay: 0.15s;
+}
+
+.avatar-typing span[aria-hidden]:nth-of-type(4) {
+    animation-delay: 0.3s;
+}
+
+.avatar-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0 0.9rem 0.6rem;
+}
+
+.avatar-quick button {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-color);
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.avatar-quick button:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.avatar-quick button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.avatar-form {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.6rem 0.9rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.avatar-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.avatar-send:not(:disabled) {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.avatar-send:hover:not(:disabled) {
+    background: var(--secondary-color);
+    color: #fff;
+}
+
+.avatar-hide {
+    padding: 0 0.9rem 0.6rem;
+    border: none;
+    background: none;
+    color: var(--text-light);
+    font: inherit;
+    font-size: 0.72rem;
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.avatar-hide:hover {
+    color: var(--text-color);
+}
+
+@media (max-width: 480px) {
+    .avatar-widget {
+        --avatar-launcher-size: 56px;
+        --avatar-gap: 16px;
+    }
+}
+
+/* Briefly rings the part of the page an answer was about. */
+.avatar-spotlight {
+    animation: avatar-spotlight 2.5s ease-out;
+}
+
+@keyframes avatar-spotlight {
+    0%, 60% { box-shadow: 0 0 0 3px var(--primary-color), 0 0 24px rgba(220, 38, 38, 0.45); }
+    100% { box-shadow: 0 0 0 3px transparent; }
+}
+
+@keyframes avatar-idle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+@keyframes avatar-pulse {
+    from { opacity: 0.9; transform: scale(1); }
+    to { opacity: 0; transform: scale(1.35); }
+}
+
+@keyframes avatar-pulse-bg {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+}
+
+@keyframes avatar-bar {
+    0%, 100% { height: 3px; }
+    50% { height: 9px; }
+}
+
+@keyframes avatar-dot {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-3px); }
+}
+
+@keyframes avatar-panel-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Moves the whole widget from the viewport center to its natural bottom-right
+   spot, fading in near the start so it feels like an arrival. The start offset
+   adds back the corner gap and half the launcher so the avatar's own center
+   lands on the screen center (not its top-left corner). */
+@keyframes avatar-intro-flight {
+    0% {
+        transform: translate(
+            calc(-50vw + var(--avatar-gap) + var(--avatar-launcher-size) / 2),
+            calc(-50vh + var(--avatar-gap) + var(--avatar-launcher-size) / 2)
+        );
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes avatar-intro-balloon-in {
+    from { opacity: 0; transform: translateY(6px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .avatar-launcher,
+    .avatar-launcher::after,
+    .avatar-wave span,
+    .avatar-typing span,
+    .avatar-panel,
+    .avatar-bubble,
+    .avatar-icon-btn.is-listening {
+        animation: none !important;
+    }
+
+    /* Skip the flight; just show the avatar in place. */
+    .avatar-widget.is-intro,
+    .avatar-intro-balloon {
+        animation: none !important;
+    }
+
+    .avatar-spotlight {
+        animation: none;
+        box-shadow: 0 0 0 3px var(--primary-color);
+    }
+
+    /* Keep a static cue that the avatar is talking. */
+    .avatar-launcher.is-speaking::after {
+        opacity: 1;
+    }
+}

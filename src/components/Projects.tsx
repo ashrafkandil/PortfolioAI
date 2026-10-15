@@ -1,5 +1,6 @@
 import type { Project } from '../types';
 import FadeIn from './FadeIn';
+import { requestNarration } from './Avatar/avatarBus';
 
 interface ProjectsProps {
   projects: Project[];
@@ -7,10 +8,43 @@ interface ProjectsProps {
   error: string | null;
 }
 
+/**
+ * Hover balloon listing the experiences a project was delivered in. Rendered
+ * next to the card (CSS shows it on hover / focus-within) so the card itself
+ * keeps its existing hover lift untouched. Title, company and period come
+ * straight from the experience the project is linked to.
+ */
+function ProjectExperienceBalloon({ project }: { project: Project }) {
+  if (project.experiences.length === 0) return null;
+
+  return (
+    <div className="project-experience-balloon" role="tooltip" id={`project-${project.id}-experiences`}>
+      <span className="project-experience-balloon-title">
+        {project.experiences.length > 1 ? 'Part of these experiences' : 'Part of this experience'}
+      </span>
+      <ul className="project-experience-list">
+        {project.experiences.map((experience) => (
+          <li key={experience.id} className="project-experience-item">
+            <span className="project-experience-role">{experience.title}</span>
+            <span className="project-experience-company">{experience.company}</span>
+            <span className="project-experience-period">{experience.period}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function ProjectCard({ project }: { project: Project }) {
   return (
     <FadeIn className="project-card-wrapper">
-      <article className="project-card">
+      <article
+        className="project-card"
+        id={`project-${project.id}`}
+        data-narration={project.narration}
+        aria-describedby={project.experiences.length > 0 ? `project-${project.id}-experiences` : undefined}
+      >
+        <ProjectExperienceBalloon project={project} />
         <div className="project-header">
           <i className={`${project.icon} project-icon`} aria-hidden="true" />
           <h3>{project.title}</h3>
@@ -33,6 +67,14 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
         <div className="project-links">
+          <button
+            type="button"
+            className="project-link project-listen"
+            onClick={() => requestNarration(project.narration)}
+            aria-label={`Listen to a summary of ${project.title}`}
+          >
+            <i className="fa-solid fa-volume-high" aria-hidden="true" /> Listen
+          </button>
           {project.links.map((link) => (
             <a
               key={link.label}

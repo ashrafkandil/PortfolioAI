@@ -4,6 +4,8 @@ import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { db, getSiteData, saveMessage } from './db.js';
+import { createAvatarRouter } from './avatar.js';
+import { projectNarration } from './avatar-knowledge.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -16,8 +18,17 @@ app.get('/api/site-data', (_req, res) => {
     res.status(503).json({ error: 'Database is empty. Run: npm run seed' });
     return;
   }
-  res.json(data);
+  // The avatar reads each card's narration aloud; build it here so the spoken
+  // summary and the avatar's own answers come from the same code.
+  const projects = data.projects.map((project) => ({ ...project, narration: projectNarration(project) }));
+  const personalProjects = data.personalProjects.map((project) => ({
+    ...project,
+    narration: projectNarration(project),
+  }));
+  res.json({ ...data, projects, personalProjects });
 });
+
+app.use('/api/avatar', createAvatarRouter());
 
 app.post('/api/contact', (req, res) => {
   const { name, email, message } = req.body ?? {};

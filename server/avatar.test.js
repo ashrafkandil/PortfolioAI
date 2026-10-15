@@ -6,7 +6,13 @@ import { answerLocally, limitSentences, projectNarration, resolveTarget } from '
 // Answer from the seed file rather than whatever is in the local database.
 vi.mock('./db.js', () => ({ getSiteData: () => seed }));
 
-const { createAvatarRouter, parseNavigationTag } = await import('./avatar.js');
+const { LANGUAGES, createAvatarRouter, parseNavigationTag } = await import('./avatar.js');
+
+describe('supported languages', () => {
+  it('offers exactly English, Arabic and French', () => {
+    expect(LANGUAGES.map((lang) => lang.code)).toEqual(['en', 'ar', 'fr']);
+  });
+});
 
 describe('answerLocally', () => {
   const ask = (question) => answerLocally(question, seed).text;
@@ -83,7 +89,7 @@ describe('navigation targets', () => {
   });
 
   it('resolves keys to a view and element id, rejecting unknown ones', () => {
-    expect(resolveTarget('projects/erp-system', seed)).toEqual({ view: 'projects', anchor: 'project-erp-system' });
+    expect(resolveTarget('projects/Bedrock', seed)).toEqual({ view: 'projects', anchor: 'project-Bedrock' });
     expect(resolveTarget('skills', seed)).toEqual({ view: 'about', anchor: 'skills' });
     expect(resolveTarget('contact', seed)).toEqual({ view: 'contact' });
     expect(resolveTarget('projects/nope', seed)).toBeNull();
@@ -115,12 +121,13 @@ describe('helpers', () => {
   });
 });
 
-describe('avatar router (no LLM or translator configured)', () => {
+describe('avatar router (no Gemini or translator configured)', () => {
   let server;
   let base;
 
   beforeAll(async () => {
-    delete process.env.AVATAR_LLM_MODEL;
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.GEMINI_MODEL;
     delete process.env.LIBRETRANSLATE_URL;
     const app = express();
     app.use(express.json());
@@ -164,5 +171,20 @@ describe('avatar router (no LLM or translator configured)', () => {
   it('rejects empty and oversized questions', async () => {
     expect((await post('/query', { question: '   ' })).status).toBe(400);
     expect((await post('/query', { question: 'x'.repeat(501) })).status).toBe(400);
+  });
+
+  it('rejects malformed audio clips', async () => {
+    const response = await post('/query', {
+      question: '',
+      audio: { mimeType: 'audio/mp3', data: 'A'.repeat(200) },
+    });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toMatch(/WAV/);
+  });
+
+  it('explains that voice questions need a Gemini key', async () => {
+    const response = await post('/query', { audio: { mimeType: 'audio/wav', data: 'A'.repeat(200) } });
+    expect(response.status).toBe(503);
+    expect((await response.json()).error).toMatch(/GEMINI_API_KEY/);
   });
 });

@@ -58,6 +58,11 @@ export default function App() {
         active={view}
         onNavigate={navigate}
       />
+      {data && error && (
+        <p className="data-refresh-warning" role="status">
+          Live data refresh failed: {error}. Showing the last loaded content and retrying.
+        </p>
+      )}
       {/* The only scrollable region: everything below the navbar lives here. */}
       <main id="main" className="view" ref={viewRef} tabIndex={-1}>
         {view === 'home' &&
@@ -74,13 +79,13 @@ export default function App() {
           ))}
         {view === 'about' && (data ? <About about={data.about} /> : <StatusView message={placeholder} />)}
         {view === 'experience' && (
-          <Experience experience={data?.experience ?? []} loading={loading} error={error} />
+          <Experience experience={data?.experience ?? []} loading={loading} error={data ? null : error} />
         )}
         {view === 'projects' && (
-          <Projects projects={data?.projects ?? []} loading={loading} error={error} />
+          <Projects projects={data?.projects ?? []} loading={loading} error={data ? null : error} />
         )}
         {view === 'personal' && (
-          <Personal projects={data?.personalProjects ?? []} loading={loading} error={error} />
+          <Personal projects={data?.personalProjects ?? []} loading={loading} error={data ? null : error} />
         )}
         {view === 'contact' &&
           (data ? (

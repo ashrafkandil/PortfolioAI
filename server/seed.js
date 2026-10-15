@@ -6,7 +6,15 @@ import { db } from './db.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const source = JSON.parse(fs.readFileSync(path.join(__dirname, 'seed-data.json'), 'utf8'));
 
+// seed-data.json is the starting point, not a fixture re-applied on every run.
+// The database is the source of truth once it exists: this script only fills an
+// empty database (see the guard below) so routine runs never wipe live data.
+// Pass --force to deliberately reset back to the JSON contents.
+const force = process.argv.slice(2).some((arg) => arg === '--force' || arg === '-f');
+
+// Tables ordered child-first so a --force reset respects foreign keys.
 const tables = [
+  'experience_projects',
   'project_links',
   'project_tech',
   'project_features',
@@ -25,9 +33,20 @@ const tables = [
   'profile',
 ];
 
-db.exec('BEGIN');
+// Serialize against other seed processes and external database writers while
+// checking whether the tables this seed owns already contain data.
+db.exec('BEGIN IMMEDIATE');
+const hasSeedData = tables.some((table) => db.prepare(`SELECT 1 FROM ${table} LIMIT 1`).get());
+if (hasSeedData && !force) {
+  db.exec('ROLLBACK');
+  console.log('portfolio.db already has data - leaving it untouched. (Run "npm run seed:force" to reset from seed-data.json.)');
+  process.exit(0);
+}
+
 try {
-  for (const table of tables) db.exec(`DELETE FROM ${table};`);
+  if (force) {
+    for (const table of tables) db.exec(`DELETE FROM ${table};`);
+  }
 
   db.prepare(
     `INSERT INTO profile (id, site_name, name, role, tagline, short_bio, image, email, phone, location, form_endpoint)
@@ -64,9 +83,13 @@ try {
   const insertExp = db.prepare('INSERT INTO experiences (key, title, period, company, sort) VALUES (?, ?, ?, ?, ?)');
   const insertDuty = db.prepare('INSERT INTO experience_duties (experience_id, text, sort) VALUES (?, ?, ?)');
   const insertExpTech = db.prepare('INSERT INTO experience_tech (experience_id, name, sort) VALUES (?, ?, ?)');
+  // Remember each row's generated id so the many-to-many links can be resolved
+  // from the seed file's stable keys instead of hard-coded numbers.
+  const experienceIds = new Map();
   source.experience.forEach((item, i) => {
     const { lastInsertRowid } = insertExp.run(item.id, item.title, item.period, item.company, i);
     const id = Number(lastInsertRowid);
+    experienceIds.set(item.id, id);
     item.duties.forEach((duty, j) => insertDuty.run(id, duty, j));
     item.tech.forEach((tech, j) => insertExpTech.run(id, tech, j));
   });
@@ -79,12 +102,28 @@ try {
   const insertProjectLink = db.prepare(
     'INSERT INTO project_links (project_id, label, icon, url, sort) VALUES (?, ?, ?, ?, ?)'
   );
+  const projectIds = new Map();
   source.projects.forEach((project, i) => {
     const { lastInsertRowid } = insertProject.run(project.id, project.icon, project.title, project.description, i);
     const id = Number(lastInsertRowid);
+    projectIds.set(project.id, id);
     project.features.forEach((feature, j) => insertFeature.run(id, feature, j));
     project.tech.forEach((tech, j) => insertProjectTech.run(id, tech, j));
     project.links.forEach((link, j) => insertProjectLink.run(id, link.label, link.icon, link.url, j));
+  });
+
+  // Many-to-many link between projects and the experiences they were part of.
+  const insertExperienceProject = db.prepare(
+    'INSERT OR IGNORE INTO experience_projects (experience_id, project_id) VALUES (?, ?)'
+  );
+  (source.experienceProjects ?? []).forEach(({ experience, projects }) => {
+    const experienceId = experienceIds.get(experience);
+    if (!experienceId) throw new Error(`Unknown experience key in experienceProjects: ${experience}`);
+    projects.forEach((projectKey) => {
+      const projectId = projectIds.get(projectKey);
+      if (!projectId) throw new Error(`Unknown project key in experienceProjects: ${projectKey}`);
+      insertExperienceProject.run(experienceId, projectId);
+    });
   });
 
   const insertPersonalProject = db.prepare(
@@ -117,6 +156,8 @@ try {
   throw error;
 }
 
+const linkCount = (source.experienceProjects ?? []).reduce((total, entry) => total + entry.projects.length, 0);
+
 console.log(
-  `Seeded portfolio.db: ${source.social.length} social links, ${source.experience.length} experiences, ${source.projects.length} projects, ${source.personalProjects.length} personal projects.`
+  `${force ? 'Reset' : 'Seeded'} portfolio.db: ${source.social.length} social links, ${source.experience.length} experiences, ${source.projects.length} projects, ${source.personalProjects.length} personal projects, ${linkCount} experience-project links.`
 );

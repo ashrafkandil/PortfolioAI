@@ -84,7 +84,19 @@ function techIndex(data) {
 }
 
 /** Significant words of a project title, for loose matches like "the chatbot". */
-const TITLE_STOPWORDS = new Set(['system', 'platform', 'app', 'the', 'and', 'real-time', 'mobile', 'dashboard']);
+const TITLE_STOPWORDS = new Set([
+  'system',
+  'platform',
+  'app',
+  'the',
+  'and',
+  'real-time',
+  'mobile',
+  'dashboard',
+  // Generic lifecycle words in "Bedrock - Life Insurance Administration System".
+  'life',
+  'administration',
+]);
 
 function findProject(question, projects) {
   const exact = projects.find((project) => question.includes(project.title.toLowerCase()));
@@ -104,7 +116,14 @@ export function introduction(data) {
 }
 
 /** Generic words in company names that should not identify an employer on their own. */
-const COMPANY_STOPWORDS = new Set(['inc.', 'corp.', 'ltd.', 'llc', 'technologies', 'solutions', 'agency', 'group']);
+const COMPANY_STOPWORDS = new Set(['inc', 'corp', 'ltd', 'llc', 'technologies', 'solutions', 'agency', 'group']);
+
+/**
+ * Employer names in the data sometimes carry a trailing period or other
+ * punctuation ("SunGard.", "Optik K&R Inc."), so strip edge punctuation from
+ * each word before matching against a question.
+ */
+const trimPunctuation = (word) => word.replace(/^[^\w]+|[^\w]+$/g, '');
 
 function findJob(question, experience) {
   return experience.find((job) => {
@@ -112,6 +131,7 @@ function findJob(question, experience) {
     if (question.includes(name)) return true;
     return name
       .split(/\s+/)
+      .map(trimPunctuation)
       .filter((word) => word.length > 4 && !COMPANY_STOPWORDS.has(word))
       .some((word) => mentions(question, word));
   });

@@ -10,6 +10,14 @@ export interface ProjectLink {
   url: string;
 }
 
+/** An experience a project belongs to, shown in the card's hover balloon. */
+export interface ProjectExperienceRef {
+  id: string;
+  title: string;
+  company: string;
+  period: string;
+}
+
 export interface Project {
   id: string;
   icon: string;
@@ -18,6 +26,8 @@ export interface Project {
   features: string[];
   tech: string[];
   links: ProjectLink[];
+  /** Experiences this project is part of; empty when it has none linked yet. */
+  experiences: ProjectExperienceRef[];
   /** Short spoken summary the avatar reads aloud; built by the API. */
   narration: string;
 }

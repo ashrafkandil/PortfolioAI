@@ -39,34 +39,30 @@
   "formEndpoint": "/api/contact",
   "experience": [
     {
-      "id": "rbc-capital-markets",
-      "title": "Senior .NET Developer",
-      "period": "July 2014 – Present",
-      "company": "RBC Capital Markets | Greater Toronto Area, Canada",
+      "id": "rbc-capital-markets_1",
+      "title": "Lead software Engineer",
+      "period": "Jan 2025 – Present",
+      "company": "RBC Capital Markets | Toronto, Canada",
       "duties": [
         "Experience details to be added."
       ],
-      "tech": []
+      "tech": ["C#"]
+    },
+    {
+      "id": "rbc-capital-markets_2",
+      "title": "Lead software Developer",
+      "period": "November 2018 – Dec 2024",
+      "company": "RBC Capital Markets | Toronto, Canada",
+      "duties": [
+        "Experience details to be added."
+      ],
+      "tech": ["C#"]
     },
     {
       "id": "citi-lead",
-      "title": "Lead .NET Developer – AVP",
-      "period": "January 2014 – July 2014",
-      "company": "Citi | Mississauga, Ontario",
-      "duties": [
-        "Led and contributed hands-on to the development of FUSION, an enterprise .NET application supporting real-time futures execution, automated trade workflows, client allocations, and clearing operations within an Agile/Scrum environment.",
-        "Designed and implemented operational dashboards, management summaries, and trade reporting functionality using C#, .NET, WPF, SQL Server, and DevExpress.",
-        "Engineered an asynchronous, multithreaded export module supporting Excel, CSV, and XML formats for order and trade data.",
-        "Refactored and optimized application components, upgraded the UI architecture to PRISM 4, and implemented MVVM patterns to improve maintainability and code organization.",
-        "Established development standards, conducted code reviews, mentored developers, and collaborated with business stakeholders and cross-functional IT teams to deliver technical solutions."
-      ],
-      "tech": ["C#", ".NET", "WPF", "SQL Server", "DevExpress", "PRISM 4", "MVVM"]
-    },
-    {
-      "id": "citi-senior",
-      "title": "Senior .NET Developer – AVP",
-      "period": "August 2013 – December 2013",
-      "company": "Citi | Mississauga, Ontario",
+      "title": "Lead Software Developer - AVP",
+      "period": "August 2013 – July 2014",
+      "company": "Citi | Mississauga, Canada",
       "duties": [
         "Led and contributed hands-on to the development of FUSION, an enterprise .NET application supporting real-time futures execution, automated trade workflows, client allocations, and clearing operations within an Agile/Scrum environment.",
         "Designed and implemented operational dashboards, management summaries, and trade reporting functionality using C#, .NET, WPF, SQL Server, and DevExpress.",
@@ -78,9 +74,9 @@
     },
     {
       "id": "livingston-international",
-      "title": "Senior / Lead .NET Application Developer",
+      "title": "Lead Software Developer",
       "period": "October 2011 – July 2013",
-      "company": "Livingston International | Greater Toronto Area, Canada",
+      "company": "Livingston International | Toronto, Canada",
       "duties": [
         "Developed and enhanced BOSS, an enterprise customs brokerage application, using C#, WPF, WCF, Entity Framework, SQL Server 2008/2012, Telerik, and DevExpress.",
         "Designed and implemented application modules using MVP and MVVM patterns, applying established software engineering practices and coding standards.",
@@ -91,9 +87,9 @@
     },
     {
       "id": "questrade",
-      "title": "Senior .NET Developer",
+      "title": "Senior Software Developer",
       "period": "May 2011 – September 2011",
-      "company": "Questrade Inc. | Toronto, Ontario",
+      "company": "Questrade Inc. | Toronto, Canada",
       "duties": [
         "Developed client-facing and internal CRM applications supporting trading account administration, client profiles, and service request management.",
         "Implemented application features and services using C#, .NET 3.5/4.0, ASP.NET, WCF, JavaScript, jQuery, LINQ, TPL, HTML, XML, SQL Server, and Sybase.",
@@ -104,9 +100,9 @@
     },
     {
       "id": "sungard",
-      "title": "Senior Technical Analyst / Lead Developer",
+      "title": "Senior Software Developer",
       "period": "March 2007 – April 2011",
-      "company": "SunGard",
+      "company": "SunGard. | Mississauga, Canada",
       "duties": [
         "Developed and maintained iWorks Enterprise Incentive Management (EIM/FASAT), an enterprise platform supporting insurance distribution and compensation management across multiple product lines.",
         "Designed and implemented application functionality using C#, VB.NET, ASP.NET, WCF, VB6, COM+, T-SQL, SQL Server, SSIS, and XML.",
@@ -118,9 +114,9 @@
     },
     {
       "id": "rbc-life-insurance",
-      "title": "Technical Systems Analyst / Senior Technical Systems Analyst",
+      "title": "Senior Software Developer",
       "period": "May 2001 – June 2007",
-      "company": "RBC Life Insurance",
+      "company": "RBC Life Insurance. | Mississauga, Canada",
       "duties": [
         "Enhanced BEDROCK, an enterprise life insurance administration system, delivering new product functionality through technical design, application development, testing, and database schema changes.",
         "Designed and developed a credit-card transaction processing utility using C#, .NET, XML, T-SQL, and SQL Server to extract, upload, and download transaction data.",
@@ -132,9 +128,9 @@
     },
     {
       "id": "optik-kr",
-      "title": "Software Developer / Senior Software Developer Analyst",
+      "title": "Senior Software Developer",
       "period": "March 2000 – January 2001",
-      "company": "Optik K&R Inc.",
+      "company": "Optik K&R Inc. | Markham, Canada",
       "duties": [
         "Redesigned and optimized BRAINS, a client-server business application supporting sales, purchasing, manufacturing, quality control, and accounting.",
         "Developed and maintained application functionality using Delphi 5 and SQL; administered SQL Server environments, including installation, configuration, security, and performance monitoring."
@@ -143,9 +139,9 @@
     },
     {
       "id": "ministry-of-education-bahrain",
-      "title": "Software Developer / Analyst",
+      "title": "Software Developer",
       "period": "October 1993 – August 1999",
-      "company": "Ministry of Education, Bahrain",
+      "company": "Ministry of Education. | Manama | Bahrain",
       "duties": [
         "Designed, developed, tested, and supported client-server applications for student records and human resources using FoxPro, Delphi, SQL, and Oracle.",
         "Contributed to database design, unit testing, application deployment, troubleshooting, and end-user technical support.",
@@ -155,9 +151,9 @@
     },
     {
       "id": "technical-air-conditioning",
-      "title": "Senior Software Developer / Analyst (Part-Time)",
+      "title": "Software Architect & Developer",
       "period": "October 1996 – July 1999",
-      "company": "Technical Air Conditioning Est., Bahrain",
+      "company": "Technical Air Conditioning Est. | Manama | Bahrain",
       "duties": [
         "Designed database structures and developed accounting and personnel applications using Delphi 4 and SQL Server.",
         "Translated business requirements into application functionality and provided testing, maintenance, troubleshooting, and production support."
@@ -167,21 +163,18 @@
   ],
   "projects": [
     {
-      "id": "erp-system",
+      "id": "Bedrock",
       "icon": "fas fa-server",
-      "title": "Enterprise Resource Planning System",
-      "description": "A comprehensive ERP system for managing inventory, sales, and customer relationships. Handles 50,000+ transactions daily with real-time analytics and reporting capabilities.",
+      "title": "Bedrock - Life Insurance Administration System",
+      "description": "Policy administration, Premium billing, and Claims processing. Supports the complete life insurance lifecycle, from application submission and risk assessment to policy servicing and beneficiary payments.",
       "features": [
-        "Real-time inventory tracking and automated reordering",
-        "Advanced analytics dashboard with customizable reports",
-        "Multi-tenant architecture supporting 100+ concurrent users",
-        "Integration with payment gateways and shipping providers"
+        "Digital application intake with customer, health, financial, and beneficiary information.",
+        "Automated underwriting workflows and risk assessment support.",
+        "Medical-document and external verification integration",
+        "Policy issuance with premium calculation, coverage, riders, and exclusions"
       ],
-      "tech": ["Java", "Spring Boot", "Angular", "PostgreSQL", "Redis", "AWS", "Docker"],
-      "links": [
-        { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://erp-demo.example.com" },
-        { "label": "Source Code", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/erp-system" }
-      ]
+      "tech": ["Delphi", ".Net", "C#", "XML", "COM+", "TSQL", "Sql Server"],
+      "links": []
     },
     {
       "id": "fitness-app",
@@ -269,6 +262,19 @@
       ]
     }
   ],
+  "experienceProjects": [
+    {
+      "experience": "rbc-life-insurance",
+      "projects": [
+        "Bedrock",
+        "fitness-app",
+        "ecommerce-platform",
+        "analytics-dashboard",
+        "chatbot-platform",
+        "security-monitor"
+      ]
+    }
+  ],
   "personalProjects": [
     {
       "id": "crazycakes-ai",
@@ -309,14 +315,14 @@
       "id": "portfolio-ai",
       "icon": "fas fa-robot",
       "title": "PortfolioAI — AI Portfolio with Talking Avatar",
-      "description": "This portfolio site itself: a React 19 and TypeScript front end served by an Express API over a SQLite content store that is reseedable from a single JSON file. Its AI avatar uses the Web Speech API to narrate every section and project card, answers questions locally from the same seed data the pages render (with an optional LLM fallback through OpenRouter or Ollama), and keeps spoken summaries and on-screen content perfectly in sync.",
+      "description": "This portfolio site itself: a React 19 and TypeScript front end served by an Express API over a SQLite content store that is reseedable from a single JSON file. Its AI avatar narrates every section and project card with browser speech synthesis, answers questions locally from the same seed data the pages render (with Google Gemini providing AI answers, voice transcription and translation when configured), and keeps spoken summaries and on-screen content perfectly in sync.",
       "features": [
-        "AI avatar with speech recognition and text-to-speech that narrates each section and project card on demand",
-        "Local keyword answer engine sourced from the same seed data the pages render, plus optional LLM fallback (OpenRouter or Ollama)",
+        "AI avatar with Google Gemini voice input and text-to-speech that narrates each section and project card on demand",
+        "Local keyword answer engine sourced from the same seed data the pages render, plus optional Google Gemini (free tier) fallback",
         "Express API over a normalized SQLite schema for profile, experience and projects, reseedable with one command",
         "Vitest and Testing Library unit tests covering the avatar knowledge base, navigation targets and UI components"
       ],
-      "tech": ["React 19", "TypeScript", "Vite", "Express", "SQLite", "Web Speech API", "Vitest"],
+      "tech": ["React 19", "TypeScript", "Express", "Node.js", "SQLite", "Google Gemini", "LibreTranslate"],
       "links": [
         { "label": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil/PortfolioAI" },
         { "label": "Live Demo", "icon": "fas fa-external-link-alt", "url": "https://portfolioai.example.com" }

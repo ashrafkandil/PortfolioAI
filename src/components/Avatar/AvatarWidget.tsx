@@ -10,7 +10,9 @@ import {
   type SiteTarget,
 } from './api';
 import { onNarrationRequest } from './avatarBus';
-import { createRecognizer, isSttSupported, isTtsSupported, speak, stopSpeaking, type Recognizer } from './speech';
+import { isTtsSupported, speak, stopSpeaking } from './speech';
+import { isVoiceSupported, useVoiceRecorder } from './voice';
+import type { VoiceClip } from './api';
 import './Avatar.css';
 
 interface Message {
@@ -113,7 +115,6 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   const [audioOn, setAudioOn] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [pending, setPending] = useState(false);
-  const [listening, setListening] = useState(false);
   const [input, setInput] = useState('');
   // The latest answer, shown beside the launcher after the panel collapses.
   const [bubble, setBubble] = useState<{ text: string; lang: string } | null>(null);
@@ -123,7 +124,6 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   const nextId = useRef(1);
   // Async replies arrive after renders; they must see the current audio choice.
   const audioOnRef = useRef(false);
-  const recognizerRef = useRef<Recognizer | null>(null);
   const focusInputOnOpen = useRef(false);
   const launcherRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -135,7 +135,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   viewRef.current = view;
 
   const tts = isTtsSupported();
-  const stt = isSttSupported();
+  const voice = isVoiceSupported();
 
   useEffect(() => {
     let active = true;
@@ -154,7 +154,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   useEffect(
     () => () => {
       stopSpeaking();
-      recognizerRef.current?.abort();
+      // The recorder cancels itself on unmount through its own effect.
     },
     []
   );
@@ -244,15 +244,17 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   }, []);
 
   const ask = useCallback(
-    async (question: string) => {
+    async (question: string, audio?: VoiceClip) => {
       const text = question.trim();
-      if (!text || pending) return;
+      if ((!text && !audio) || pending) return;
       setInput('');
-      addMessage('user', text, lang);
+      if (text) addMessage('user', text, lang);
       setPending(true);
       const askedFrom = viewRef.current;
       try {
-        const reply = await askAvatar(text, lang);
+        const reply = await askAvatar(text, lang, audio);
+        // A voice question is only readable once Gemini transcribed it.
+        if (!text && reply.heard) addMessage('user', reply.heard, reply.lang);
         addMessage('assistant', reply.text, reply.lang);
         // If the visitor opened another view while waiting, don't pull them away.
         if (reply.target && viewRef.current === askedFrom) {
@@ -268,6 +270,25 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
     },
     [addMessage, lang, minimize, pending, showTarget]
   );
+
+  // Voice questions: record a WAV clip and let Gemini hear it on the server
+  // (same as CrazyCakesAI) - no browser speech-recognition service involved.
+  // The clip auto-sends after the visitor pauses, or when they press the mic again.
+  const recorder = useVoiceRecorder({
+    onClip: (clip) => void ask('', clip),
+    onError: (error) => {
+      const text =
+        error === 'denied'
+          ? 'Microphone access is blocked. You can type your question instead.'
+          : error === 'no-mic'
+            ? 'No microphone was found. You can type your question instead.'
+            : error === 'unsupported'
+              ? 'Voice questions need a secure page (HTTPS or localhost) with microphone access.'
+              : "Sorry, I didn't catch that. Please try again or type your question.";
+      addMessage('assistant', text, 'en', { voice: false });
+    },
+  });
+  const listening = recorder.recording;
 
   // Project cards ask for narration through the bus. Pressing Listen is an
   // explicit request for audio, so it switches the voice on.
@@ -303,39 +324,20 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   };
 
   const toggleListening = () => {
-    if (recognizerRef.current) {
-      recognizerRef.current.abort();
+    if (recorder.recording) {
+      // Sending now instead of waiting for the auto-stop after a pause.
+      recorder.stop();
       return;
     }
-    const recognizer = createRecognizer(localeFor(lang));
-    if (!recognizer) return;
     stopSpeaking();
-    recognizer.onresult = (event) => {
-      const transcript = event.results[0]?.[0]?.transcript ?? '';
-      if (transcript) void ask(transcript);
-    };
-    recognizer.onerror = (event) => {
-      if (event.error === 'aborted') return;
-      const text =
-        event.error === 'not-allowed'
-          ? 'Microphone access is blocked. You can type your question instead.'
-          : "Sorry, I didn't catch that. Please try again or type your question.";
-      addMessage('assistant', text, 'en', { voice: false });
-    };
-    recognizer.onend = () => {
-      recognizerRef.current = null;
-      setListening(false);
-    };
-    recognizerRef.current = recognizer;
-    setListening(true);
-    recognizer.start();
+    void recorder.start();
   };
 
   const closePanel = () => {
     setOpen(false);
     stopSpeaking();
     setSpeaking(false);
-    recognizerRef.current?.abort();
+    recorder.cancel();
     launcherRef.current?.focus();
   };
 
@@ -479,7 +481,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
               maxLength={500}
               dir="auto"
             />
-            {stt && (
+            {voice && (
               <button
                 type="button"
                 className={`avatar-icon-btn${listening ? ' is-listening' : ''}`}

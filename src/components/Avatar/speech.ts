@@ -1,7 +1,9 @@
 /**
- * Thin wrappers over the browser-native Web Speech API: text-to-speech is
- * supported almost everywhere, speech-to-text only in Chromium and Safari.
- * Both are feature-detected so the avatar degrades to text when missing.
+ * Thin wrappers over the browser-native Web Speech API for text-to-speech,
+ * which is supported almost everywhere. Speech *input* is not done here: the
+ * mic records a WAV clip (see voice.ts) and Google Gemini transcribes it on
+ * the server, so voice works in every browser. TTS is feature-detected so the
+ * avatar degrades to text when missing.
  */
 
 /**
@@ -109,39 +111,3 @@ export function stopSpeaking(): void {
   if (isTtsSupported()) window.speechSynthesis.cancel();
 }
 
-/** The subset of the (still prefixed in some browsers) SpeechRecognition API we use. */
-export interface Recognizer {
-  lang: string;
-  interimResults: boolean;
-  maxAlternatives: number;
-  start(): void;
-  abort(): void;
-  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  onerror: ((event: { error: string }) => void) | null;
-  onend: (() => void) | null;
-}
-
-type RecognizerConstructor = new () => Recognizer;
-
-function recognizerClass(): RecognizerConstructor | null {
-  if (typeof window === 'undefined') return null;
-  const scope = window as unknown as {
-    SpeechRecognition?: RecognizerConstructor;
-    webkitSpeechRecognition?: RecognizerConstructor;
-  };
-  return scope.SpeechRecognition ?? scope.webkitSpeechRecognition ?? null;
-}
-
-export function isSttSupported(): boolean {
-  return recognizerClass() !== null;
-}
-
-export function createRecognizer(locale: string): Recognizer | null {
-  const Recognition = recognizerClass();
-  if (!Recognition) return null;
-  const recognizer = new Recognition();
-  recognizer.lang = locale;
-  recognizer.interimResults = false;
-  recognizer.maxAlternatives = 1;
-  return recognizer;
-}

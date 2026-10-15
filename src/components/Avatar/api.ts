@@ -50,16 +50,37 @@ export interface SiteTarget {
   anchor?: string;
 }
 
-export interface AvatarReply extends LocalizedText {
-  target: SiteTarget | null;
+/** A recorded voice question: a small WAV clip the server hands to Gemini. */
+export interface VoiceClip {
+  mimeType: 'audio/wav';
+  data: string;
 }
 
-export async function askAvatar(question: string, lang: string): Promise<AvatarReply> {
-  const reply = await post<{ answer: string; lang: string; target?: SiteTarget | null }>('/api/avatar/query', {
-    question,
-    lang,
-  });
-  return { text: reply.answer, lang: reply.lang, target: reply.target ?? null };
+export interface AvatarReply extends LocalizedText {
+  target: SiteTarget | null;
+  /** What Gemini heard, when the visitor asked by voice. */
+  heard?: string;
+}
+
+export async function askAvatar(
+  question: string,
+  lang: string,
+  audio?: VoiceClip
+): Promise<AvatarReply> {
+  const reply = await post<{ answer: string; lang: string; target?: SiteTarget | null; heard?: string }>(
+    '/api/avatar/query',
+    {
+      question,
+      lang,
+      ...(audio ? { audio } : {}),
+    }
+  );
+  return {
+    text: reply.answer,
+    lang: reply.lang,
+    target: reply.target ?? null,
+    ...(reply.heard ? { heard: reply.heard } : {}),
+  };
 }
 
 export async function translateText(text: string, lang: string): Promise<LocalizedText> {

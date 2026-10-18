@@ -8,7 +8,18 @@
     "image": "images/Me_1.png",
     "email": "ashraf.kandil@gmail.com",
     "phone": "+1 (555) 123-4567",
-    "location": "San Francisco, CA"
+    "location": "San Francisco, CA",
+    "contactTitle": "Get In Touch",
+    "contactIntro": "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.",
+    "contactFormTitle": "Send Me a Message",
+    "contactFormNamePlaceholder": "Your Name",
+    "contactFormEmailPlaceholder": "Your Email",
+    "contactFormMessagePlaceholder": "Your Message",
+    "contactFormSubmitText": "Send Message",
+    "contactFormSendingText": "Sending...",
+    "contactFormSuccessText": "Thank you, {name}! Your message has been sent.",
+    "contactFormErrorText": "Something went wrong. Please try again or email me directly.",
+    "contactFormMailtoSuccess": "Your email client should open with the message pre-filled."
   },
   "social": [
     { "platform": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil" },

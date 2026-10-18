@@ -61,6 +61,17 @@ export interface Profile {
   email: string;
   phone: string;
   location: string;
+  contactTitle: string;
+  contactIntro: string;
+  contactFormTitle: string;
+  contactFormNamePlaceholder: string;
+  contactFormEmailPlaceholder: string;
+  contactFormMessagePlaceholder: string;
+  contactFormSubmitText: string;
+  contactFormSendingText: string;
+  contactFormSuccessText: string;
+  contactFormErrorText: string;
+  contactFormMailtoSuccess: string;
 }
 
 export interface SiteData {

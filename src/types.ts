@@ -10,7 +10,7 @@ export interface ProjectLink {
   url: string;
 }
 
-/** An experience a project belongs to, shown in the card's hover balloon. */
+/** An experience a project belongs to, shown in the card's experience ticker. */
 export interface ProjectExperienceRef {
   id: string;
   title: string;

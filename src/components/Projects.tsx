@@ -9,28 +9,25 @@ interface ProjectsProps {
 }
 
 /**
- * Hover balloon listing the experiences a project was delivered in. Rendered
- * next to the card (CSS shows it on hover / focus-within) so the card itself
- * keeps its existing hover lift untouched. Title, company and period come
- * straight from the experience the project is linked to.
+ * Scrolling ticker listing the experiences a project was delivered in. Shown
+ * above the project name on the card. The text is duplicated so the marquee
+ * loops seamlessly; the duplicate is hidden from assistive technology.
  */
-function ProjectExperienceBalloon({ project }: { project: Project }) {
+function ProjectExperienceTicker({ project }: { project: Project }) {
   if (project.experiences.length === 0) return null;
 
+  const tickerText = project.experiences
+    .map((experience) => `${experience.title} @ ${experience.company} (${experience.period})`)
+    .join('  •  ');
+
   return (
-    <div className="project-experience-balloon" role="tooltip" id={`project-${project.id}-experiences`}>
-      <span className="project-experience-balloon-title">
-        {project.experiences.length > 1 ? 'Part of these experiences' : 'Part of this experience'}
-      </span>
-      <ul className="project-experience-list">
-        {project.experiences.map((experience) => (
-          <li key={experience.id} className="project-experience-item">
-            <span className="project-experience-role">{experience.title}</span>
-            <span className="project-experience-company">{experience.company}</span>
-            <span className="project-experience-period">{experience.period}</span>
-          </li>
-        ))}
-      </ul>
+    <div className="project-experience-ticker">
+      <div className="project-experience-ticker-track">
+        <span className="project-experience-ticker-text">{tickerText}</span>
+        <span className="project-experience-ticker-text" aria-hidden="true">
+          {tickerText}
+        </span>
+      </div>
     </div>
   );
 }
@@ -42,9 +39,8 @@ function ProjectCard({ project }: { project: Project }) {
         className="project-card"
         id={`project-${project.id}`}
         data-narration={project.narration}
-        aria-describedby={project.experiences.length > 0 ? `project-${project.id}-experiences` : undefined}
       >
-        <ProjectExperienceBalloon project={project} />
+        <ProjectExperienceTicker project={project} />
         <div className="project-header">
           <i className={`${project.icon} project-icon`} aria-hidden="true" />
           <h3>{project.title}</h3>

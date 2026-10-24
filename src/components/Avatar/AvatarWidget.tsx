@@ -542,7 +542,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
         aria-controls={open ? panelId : undefined}
         aria-label={open ? `Close ${first}'s assistant` : `Open ${first}'s assistant`}
       >
-        <img src={profile.image} alt="" width={64} height={64} />
+        <img src="/images/Me_2.png" alt="" width={64} height={64} />
         <span className="avatar-wave" aria-hidden="true">
           <span />
           <span />

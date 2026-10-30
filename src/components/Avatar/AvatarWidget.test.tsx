@@ -67,6 +67,13 @@ afterEach(() => {
 const openPanel = () => fireEvent.click(screen.getByRole('button', { name: "Open Ashraf's assistant" }));
 
 describe('AvatarWidget', () => {
+  it('uses the alternate portrait only for the avatar launcher', () => {
+    const { container } = render(<AvatarWidget profile={profile} />);
+
+    expect(container.querySelector('.avatar-launcher img')?.getAttribute('src')).toBe('/images/Me_2.png');
+    expect(container.querySelector('.avatar-launcher img')?.getAttribute('src')).not.toBe(profile.image);
+  });
+
   it('starts collapsed and opens with a greeting', () => {
     render(<AvatarWidget profile={profile} />);
     expect(screen.queryByRole('dialog')).toBeNull();

@@ -10,7 +10,7 @@ export interface ProjectLink {
   url: string;
 }
 
-/** An experience a project belongs to, shown in the card's hover balloon. */
+/** An experience a project belongs to, shown in the card's experience ticker. */
 export interface ProjectExperienceRef {
   id: string;
   title: string;
@@ -61,6 +61,17 @@ export interface Profile {
   email: string;
   phone: string;
   location: string;
+  contactTitle: string;
+  contactIntro: string;
+  contactFormTitle: string;
+  contactFormNamePlaceholder: string;
+  contactFormEmailPlaceholder: string;
+  contactFormMessagePlaceholder: string;
+  contactFormSubmitText: string;
+  contactFormSendingText: string;
+  contactFormSuccessText: string;
+  contactFormErrorText: string;
+  contactFormMailtoSuccess: string;
 }
 
 export interface SiteData {

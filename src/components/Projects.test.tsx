@@ -55,42 +55,50 @@ describe('Projects', () => {
     expect(screen.getByRole('heading', { name: 'Bedrock' })).toBeTruthy();
   });
 
-  it('shows a hover balloon listing the experiences of the project', () => {
-    render(<Projects projects={[linkedProject]} loading={false} error={null} />);
+  it('shows experiences as a moving ticker above the project name', () => {
+    const { container } = render(<Projects projects={[linkedProject]} loading={false} error={null} />);
 
-    const balloon = screen.getByRole('tooltip');
-    expect(balloon.textContent).toContain('Part of this experience');
-    expect(balloon.textContent).toContain('Senior Software Developer');
-    expect(balloon.textContent).toContain('RBC Life Insurance');
-    expect(balloon.textContent).toContain('2021 - Present');
+    const ticker = container.querySelector('.project-experience-ticker');
+    const header = container.querySelector('.project-header');
+    const card = container.querySelector('.project-card');
+
+    expect(ticker).toBeTruthy();
+    expect(ticker!.textContent).toContain('Senior Software Developer');
+    expect(ticker!.textContent).toContain('RBC Life Insurance');
+    expect(ticker!.textContent).toContain('2021 - Present');
+    // The ticker sits at the top of the card, above the project title.
+    expect(Array.from(card!.children).indexOf(ticker!)).toBeLessThan(
+      Array.from(card!.children).indexOf(header!),
+    );
   });
 
-  it('lists every linked experience, one entry each', () => {
+  it('lists every linked experience in the ticker', () => {
     const project = makeProject({
       experiences: [
         { id: 'rbc-life-insurance', title: 'Senior Software Developer', company: 'RBC Life Insurance', period: '2021 - Present' },
         { id: 'questrade', title: 'Senior Developer', company: 'Questrade', period: '2018 - 2021' },
       ],
     });
-    render(<Projects projects={[project]} loading={false} error={null} />);
+    const { container } = render(<Projects projects={[project]} loading={false} error={null} />);
 
-    const balloon = screen.getByRole('tooltip');
-    expect(balloon.textContent).toContain('Part of these experiences');
-    expect(balloon.querySelectorAll('li')).toHaveLength(2);
+    const tickerText = container.querySelector('.project-experience-ticker-text')!.textContent!;
+    expect(tickerText).toContain('Senior Software Developer @ RBC Life Insurance (2021 - Present)');
+    expect(tickerText).toContain('Senior Developer @ Questrade (2018 - 2021)');
   });
 
-  it('links the card to its balloon for assistive tech', () => {
+  it('duplicates the ticker text for a seamless loop and hides the copy from assistive tech', () => {
     const { container } = render(<Projects projects={[linkedProject]} loading={false} error={null} />);
 
-    const card = container.querySelector('.project-card');
-    expect(card?.getAttribute('aria-describedby')).toBe('project-chatbot-platform-experiences');
+    const copies = container.querySelectorAll('.project-experience-ticker-text');
+    expect(copies).toHaveLength(2);
+    expect(copies[0].hasAttribute('aria-hidden')).toBe(false);
+    expect(copies[1].getAttribute('aria-hidden')).toBe('true');
   });
 
-  it('renders no balloon when a project has no linked experience', () => {
+  it('renders no ticker when a project has no linked experience', () => {
     const { container } = render(<Projects projects={[makeProject()]} loading={false} error={null} />);
 
+    expect(container.querySelector('.project-experience-ticker')).toBeNull();
     expect(screen.queryByRole('tooltip')).toBeNull();
-    expect(container.querySelector('.project-experience-balloon')).toBeNull();
-    expect(container.querySelector('.project-card')?.hasAttribute('aria-describedby')).toBe(false);
   });
 });

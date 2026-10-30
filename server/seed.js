@@ -49,8 +49,8 @@ try {
   }
 
   db.prepare(
-    `INSERT INTO profile (id, site_name, name, role, tagline, short_bio, image, email, phone, location, form_endpoint)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO profile (id, site_name, name, role, tagline, short_bio, image, email, phone, location, form_endpoint, contact_title, contact_intro, contact_form_title, contact_form_name_placeholder, contact_form_email_placeholder, contact_form_message_placeholder, contact_form_submit_text, contact_form_sending_text, contact_form_success_text, contact_form_error_text, contact_form_mailto_success)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     source.profile.siteName ?? 'Portfolio',
     source.profile.name,
@@ -61,7 +61,18 @@ try {
     source.profile.email ?? '',
     source.profile.phone ?? '',
     source.profile.location ?? '',
-    source.formEndpoint ?? ''
+    source.formEndpoint ?? '',
+    source.profile.contactTitle ?? 'Get In Touch',
+    source.profile.contactIntro ?? "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.",
+    source.profile.contactFormTitle ?? 'Send Me a Message',
+    source.profile.contactFormNamePlaceholder ?? 'Your Name',
+    source.profile.contactFormEmailPlaceholder ?? 'Your Email',
+    source.profile.contactFormMessagePlaceholder ?? 'Your Message',
+    source.profile.contactFormSubmitText ?? 'Send Message',
+    source.profile.contactFormSendingText ?? 'Sending...',
+    source.profile.contactFormSuccessText ?? 'Thank you, {name}! Your message has been sent.',
+    source.profile.contactFormErrorText ?? 'Something went wrong. Please try again or email me directly.',
+    source.profile.contactFormMailtoSuccess ?? 'Your email client should open with the message pre-filled.'
   );
 
   const insertSocial = db.prepare(

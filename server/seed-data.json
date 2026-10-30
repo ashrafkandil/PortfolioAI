@@ -8,7 +8,18 @@
     "image": "images/Me_1.png",
     "email": "ashraf.kandil@gmail.com",
     "phone": "+1 (555) 123-4567",
-    "location": "San Francisco, CA"
+    "location": "San Francisco, CA",
+    "contactTitle": "Get In Touch",
+    "contactIntro": "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.",
+    "contactFormTitle": "Send Me a Message",
+    "contactFormNamePlaceholder": "Your Name",
+    "contactFormEmailPlaceholder": "Your Email",
+    "contactFormMessagePlaceholder": "Your Message",
+    "contactFormSubmitText": "Send Message",
+    "contactFormSendingText": "Sending...",
+    "contactFormSuccessText": "Thank you, {name}! Your message has been sent.",
+    "contactFormErrorText": "Something went wrong. Please try again or email me directly.",
+    "contactFormMailtoSuccess": "Your email client should open with the message pre-filled."
   },
   "social": [
     { "platform": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil" },
@@ -164,7 +175,7 @@
   "projects": [
     {
       "id": "Bedrock",
-      "icon": "fas fa-server",
+      "icon": "fas fa-shield-halved",
       "title": "Bedrock - Life Insurance Administration System",
       "description": "Policy administration, Premium billing, and Claims processing. Supports the complete life insurance lifecycle, from application submission and risk assessment to policy servicing and beneficiary payments.",
       "features": [
@@ -177,21 +188,18 @@
       "links": []
     },
     {
-      "id": "fitness-app",
-      "icon": "fas fa-mobile-alt",
-      "title": "Health & Fitness Mobile App",
-      "description": "A cross-platform mobile application for tracking workouts, nutrition, and health metrics. Features AI-powered recommendations and social sharing capabilities.",
+      "id": "eim-fasat",
+      "icon": "fas fa-money-bill-transfer",
+      "title": "Insurance Compensation & Incentive Management (EIM/FASAT)",
+      "description": "An enterprise insurance platform for compensation and incentive management across multiple product lines. Developed and maintained at SunGard, it combined legacy components with .NET applications and SQL Server-based data processing.",
       "features": [
-        "Personalized workout plans using machine learning algorithms",
-        "Calorie tracking with barcode scanner and food database",
-        "Integration with wearable devices (Fitbit, Apple Watch)",
-        "Social features including challenges and leaderboards"
+        "Supports agent commission and incentive workflows across insurance product lines.",
+        "Maintains legacy VB6 and COM+ components alongside C# and VB.NET applications.",
+        "Implements enterprise web applications and services using ASP.NET and WCF.",
+        "Uses T-SQL, SQL Server, SSIS, and XML for data processing and integrations."
       ],
-      "tech": ["React Native", "Node.js", "Express", "MongoDB", "TensorFlow", "Firebase", "REST API"],
-      "links": [
-        { "label": "App Store", "icon": "fab fa-app-store", "url": "https://apps.apple.com/app/id0000000000" },
-        { "label": "Play Store", "icon": "fab fa-google-play", "url": "https://play.google.com/store/apps/details?id=com.example.fitness" }
-      ]
+      "tech": ["C#", "VB.NET", "ASP.NET", "WCF", "VB6", "COM+", "T-SQL", "SQL Server", "SSIS", "XML"],
+      "links": []
     },
     {
       "id": "ecommerce-platform",
@@ -267,11 +275,16 @@
       "experience": "rbc-life-insurance",
       "projects": [
         "Bedrock",
-        "fitness-app",
         "ecommerce-platform",
         "analytics-dashboard",
         "chatbot-platform",
         "security-monitor"
+      ]
+    },
+    {
+      "experience": "sungard",
+      "projects": [
+        "eim-fasat"
       ]
     }
   ],

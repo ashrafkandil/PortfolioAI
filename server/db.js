@@ -37,7 +37,18 @@ CREATE TABLE IF NOT EXISTS profile (
   email TEXT NOT NULL DEFAULT '',
   phone TEXT NOT NULL DEFAULT '',
   location TEXT NOT NULL DEFAULT '',
-  form_endpoint TEXT NOT NULL DEFAULT ''
+  form_endpoint TEXT NOT NULL DEFAULT '',
+  contact_title TEXT NOT NULL DEFAULT 'Get In Touch',
+  contact_intro TEXT NOT NULL DEFAULT "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.",
+  contact_form_title TEXT NOT NULL DEFAULT 'Send Me a Message',
+  contact_form_name_placeholder TEXT NOT NULL DEFAULT 'Your Name',
+  contact_form_email_placeholder TEXT NOT NULL DEFAULT 'Your Email',
+  contact_form_message_placeholder TEXT NOT NULL DEFAULT 'Your Message',
+  contact_form_submit_text TEXT NOT NULL DEFAULT 'Send Message',
+  contact_form_sending_text TEXT NOT NULL DEFAULT 'Sending...',
+  contact_form_success_text TEXT NOT NULL DEFAULT 'Thank you, {name}! Your message has been sent.',
+  contact_form_error_text TEXT NOT NULL DEFAULT 'Something went wrong. Please try again or email me directly.',
+  contact_form_mailto_success TEXT NOT NULL DEFAULT 'Your email client should open with the message pre-filled.'
 );
 
 CREATE TABLE IF NOT EXISTS social_links (
@@ -179,6 +190,27 @@ if (!socialColumns.some((column) => column.name === 'is_active')) {
   db.exec('ALTER TABLE social_links ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1));');
 }
 
+const profileColumns = db.prepare('PRAGMA table_info(profile)').all();
+const profileColumnNames = profileColumns.map((c) => c.name);
+const newProfileColumns = [
+  'contact_title',
+  'contact_intro',
+  'contact_form_title',
+  'contact_form_name_placeholder',
+  'contact_form_email_placeholder',
+  'contact_form_message_placeholder',
+  'contact_form_submit_text',
+  'contact_form_sending_text',
+  'contact_form_success_text',
+  'contact_form_error_text',
+  'contact_form_mailto_success',
+];
+for (const col of newProfileColumns) {
+  if (!profileColumnNames.includes(col)) {
+    db.exec(`ALTER TABLE profile ADD COLUMN ${col} TEXT NOT NULL DEFAULT ''`);
+  }
+}
+
 export function saveMessage({ name, email, message }) {
   db.prepare('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)').run(name, email, message);
 }
@@ -278,6 +310,17 @@ function readSiteData() {
       email: profileRow.email,
       phone: profileRow.phone,
       location: profileRow.location,
+      contactTitle: profileRow.contact_title,
+      contactIntro: profileRow.contact_intro,
+      contactFormTitle: profileRow.contact_form_title,
+      contactFormNamePlaceholder: profileRow.contact_form_name_placeholder,
+      contactFormEmailPlaceholder: profileRow.contact_form_email_placeholder,
+      contactFormMessagePlaceholder: profileRow.contact_form_message_placeholder,
+      contactFormSubmitText: profileRow.contact_form_submit_text,
+      contactFormSendingText: profileRow.contact_form_sending_text,
+      contactFormSuccessText: profileRow.contact_form_success_text,
+      contactFormErrorText: profileRow.contact_form_error_text,
+      contactFormMailtoSuccess: profileRow.contact_form_mailto_success,
     },
     social,
     about: { bio, skills },

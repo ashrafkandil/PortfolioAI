@@ -8,6 +8,10 @@ interface ContactProps {
   formEndpoint: string;
 }
 
+function replacePlaceholder(text: string, name: string): string {
+  return text.replace(/\{name\}/g, name);
+}
+
 type Status =
   | { kind: 'idle' }
   | { kind: 'sending' }
@@ -37,12 +41,12 @@ export default function Contact({ profile, social, formEndpoint }: ContactProps)
         form.reset();
         setStatus({
           kind: 'success',
-          message: `Thank you, ${name}! Your message has been sent.`,
+          message: replacePlaceholder(profile.contactFormSuccessText, name),
         });
       } catch {
         setStatus({
           kind: 'error',
-          message: 'Something went wrong. Please try again or email me directly.',
+          message: profile.contactFormErrorText,
         });
       }
     } else {
@@ -51,7 +55,7 @@ export default function Contact({ profile, social, formEndpoint }: ContactProps)
       window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
       setStatus({
         kind: 'success',
-        message: 'Your email client should open with the message pre-filled.',
+        message: profile.contactFormMailtoSuccess,
       });
     }
   };
@@ -59,13 +63,10 @@ export default function Contact({ profile, social, formEndpoint }: ContactProps)
   return (
     <section id="contact" className="contact">
       <div className="container">
-        <h2 className="section-title">Get In Touch</h2>
+        <h2 className="section-title">{profile.contactTitle}</h2>
         <div className="contact-content">
           <div className="contact-info">
-            <p className="contact-text">
-              I'm always open to discussing new projects, creative ideas, or opportunities
-              to be part of your vision.
-            </p>
+            <p className="contact-text">{profile.contactIntro}</p>
             <div className="contact-details">
               <div className="contact-item">
                 <i className="fas fa-envelope" aria-hidden="true" />
@@ -83,32 +84,47 @@ export default function Contact({ profile, social, formEndpoint }: ContactProps)
             <SocialLinks links={social} className="social-links contact-social" />
           </div>
           <form className="contact-form" onSubmit={handleSubmit} noValidate={false}>
+            {profile.contactFormTitle && (
+              <h3 className="form-title">{profile.contactFormTitle}</h3>
+            )}
             <div className="form-group">
               <label htmlFor="name" className="visually-hidden">
-                Your Name
+                {profile.contactFormNamePlaceholder}
               </label>
-              <input type="text" id="name" name="name" placeholder="Your Name" required />
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder={profile.contactFormNamePlaceholder}
+                required
+              />
             </div>
             <div className="form-group">
               <label htmlFor="email" className="visually-hidden">
-                Your Email
+                {profile.contactFormEmailPlaceholder}
               </label>
-              <input type="email" id="email" name="email" placeholder="Your Email" required />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder={profile.contactFormEmailPlaceholder}
+                required
+              />
             </div>
             <div className="form-group">
               <label htmlFor="message" className="visually-hidden">
-                Your Message
+                {profile.contactFormMessagePlaceholder}
               </label>
               <textarea
                 id="message"
                 name="message"
                 rows={5}
-                placeholder="Your Message"
+                placeholder={profile.contactFormMessagePlaceholder}
                 required
               />
             </div>
             <button type="submit" disabled={status.kind === 'sending'}>
-              {status.kind === 'sending' ? 'Sending…' : 'Send Message'}
+              {status.kind === 'sending' ? profile.contactFormSendingText : profile.contactFormSubmitText}
             </button>
             <p className="form-status" role="status" aria-live="polite">
               {status.kind === 'success' && <span className="form-status-success">{status.message}</span>}

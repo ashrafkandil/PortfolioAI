@@ -40,7 +40,7 @@ function PersonalCard({ project }: { project: Project }) {
             onClick={() => requestNarration(project.narration)}
             aria-label={`Listen to a summary of ${project.title}`}
           >
-            <i className="fa-solid fa-volume-high" aria-hidden="true" /> Listen
+            <i className="fa-solid fa-volume-high" aria-hidden="true" />
           </button>
           {project.links.map((link) => (
             <a

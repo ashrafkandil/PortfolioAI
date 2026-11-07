@@ -82,6 +82,35 @@
     transform: scale(1.06);
 }
 
+/* Popup shown while hovering the launcher (not while the panel is open). */
+.avatar-hover-popup {
+    position: absolute;
+    right: calc(100% + 14px);
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    background: var(--primary-color);
+    color: #fff;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    pointer-events: none;
+    animation: avatar-hover-popup-in 0.15s ease-out;
+}
+
+.avatar-hover-popup strong {
+    font-size: 0.85rem;
+}
+
+.avatar-hover-popup span {
+    font-size: 0.72rem;
+    opacity: 0.9;
+}
+
 .avatar-launcher:focus-visible,
 .avatar-icon-btn:focus-visible,
 .avatar-quick button:focus-visible,

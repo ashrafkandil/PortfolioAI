@@ -120,6 +120,8 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   const [bubble, setBubble] = useState<{ text: string; lang: string } | null>(null);
   // Intro: the avatar flies in from the center of the screen on first paint.
   const [intro, setIntro] = useState(true);
+  // A popup shown while hovering the launcher (not while the panel is open).
+  const [hovered, setHovered] = useState(false);
 
   const nextId = useRef(1);
   // Async replies arrive after renders; they must see the current audio choice.
@@ -130,6 +132,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
   const inputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
+  const avatarHintId = useId();
   // Read after an await, so it must reflect the latest render, not the one that asked.
   const viewRef = useRef(view);
   viewRef.current = view;
@@ -536,11 +539,16 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
       <button
         ref={launcherRef}
         type="button"
-        className={`avatar-launcher${speaking ? ' is-speaking' : ''}`}
+        className={`avatar-launcher${speaking ? ' is-speaking' : ''}${hovered && !open ? ' is-hovered' : ''}`}
         onClick={toggleOpen}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocus={() => setHovered(true)}
+        onBlur={() => setHovered(false)}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         aria-label={open ? `Close ${first}'s assistant` : `Open ${first}'s assistant`}
+        aria-describedby={hovered && !open ? avatarHintId : undefined}
       >
         <img src="/images/Me_2.png" alt="" width={64} height={64} />
         <span className="avatar-wave" aria-hidden="true">
@@ -549,6 +557,12 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
           <span />
         </span>
       </button>
+      {hovered && !open && (
+        <div id={avatarHintId} className="avatar-hover-popup" role="tooltip">
+          <strong>AI Assistant</strong>
+          <span>Ask me anything about {first}'s work</span>
+        </div>
+      )}
     </div>
   );
 }

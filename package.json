@@ -8,10 +8,10 @@
     "dev:reset": "node scripts/free-dev-ports.mjs",
     "server": "node --env-file-if-exists=.env server/index.js",
     "seed": "node --env-file-if-exists=.env server/seed.js",
-    "seed:force": "node --env-file-if-exists=.env server/seed.js --force",
     "db:backup": "node scripts/backup-db.mjs",
+    "db:sync": "node scripts/sync-db.mjs",
     "build": "tsc -b && vite build",
-    "deploy:local": "npm run seed && npm run build && npm start",
+    "deploy:local": "npm run build && npm start",
     "preview": "vite preview",
     "start": "node --env-file-if-exists=.env server/index.js",
     "test": "vitest run"

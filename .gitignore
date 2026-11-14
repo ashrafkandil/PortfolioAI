@@ -2,12 +2,12 @@ node_modules
 dist
 *.local
 *.log
-server/data/
-# SQLite runtime data (default path is under server/data/; these also cover a
-# DB_PATH set elsewhere in the repo) plus WAL sidecar files.
-*.db
-*.db-shm
-*.db-wal
 .env
 .claude/settings.json
 .claude/settings.local.json
+# SQLite WAL sidecars are runtime artifacts, not versioned data
+*.db-shm
+*.db-wal
+# The portfolio.db itself IS tracked — it is the single source of truth.
+# Only the backups folder stays gitignored.
+server/data/backups/

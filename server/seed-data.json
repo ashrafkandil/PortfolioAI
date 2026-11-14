@@ -2,10 +2,11 @@
   "profile": {
     "siteName": "Ashraf Kandil Portfolio",
     "name": "Ashraf Kandil",
-    "role": "Lead Software Engineer & Software Architect",
-    "tagline": "Designing and delivering scalable, enterprise-grade software with 30+ years of experience",
-    "shortBio": "Lead software engineer and architect with 30+ years of experience designing scalable, enterprise-grade .NET, web, and mobile solutions, from architecture to hands-on full-stack development.",
+    "role": "Lead Software Engineer | AI Engineer",
+    "tagline": "Leading the design and delivery of scalable enterprise software and AI-powered products, with 30+ years of experience.",
+    "shortBio": "Lead Software Engineer with 30+ years of experience designing and delivering mission-critical systems across financial services, insurance, and capital markets. Led work on enterprise trading platforms, including FUSION at Citi; life insurance administration systems, including BEDROCK at RBC; and incentive management platforms, including EIM/FASAT at SunGard.\nEvolved from Delphi, C#, and .NET legacy modernization to modern full-stack and AI engineering, building AI-powered platforms and real-time analytics with .NET, Java, Angular, React, Node.js, and Python, supported by service-oriented architectures. Combines architectural rigor with hands-on delivery and technical mentorship, modernizing complex legacy estates into scalable, maintainable solutions.",
     "image": "images/Me_1.png",
+    "avatarImage": "images/Me_2.png",
     "email": "ashraf.kandil@gmail.com",
     "phone": "+1 (555) 123-4567",
     "location": "San Francisco, CA",
@@ -21,6 +22,29 @@
     "contactFormErrorText": "Something went wrong. Please try again or email me directly.",
     "contactFormMailtoSuccess": "Your email client should open with the message pre-filled."
   },
+  "siteMeta": {
+    "seoTitle": "Ashraf Kandil | Senior Software Engineer & Full-Stack Developer",
+    "seoDescription": "Portfolio of Ashraf Kandil, a senior software engineer with 30+ years of experience building scalable web, mobile and cloud applications.",
+    "ogTitle": "Ashraf Kandil | Senior Software Engineer",
+    "ogDescription": "Crafting robust, scalable solutions with 30+ years of experience in software development.",
+    "ogUrl": "https://ashrafkandil.example.com/",
+    "themeColor": "#0a0a0a"
+  },
+  "navLinks": [
+    { "key": "home", "label": "Home" },
+    { "key": "about", "label": "About" },
+    { "key": "experience", "label": "Experience" },
+    { "key": "projects", "label": "Projects" },
+    { "key": "personal", "label": "Personal" },
+    { "key": "contact", "label": "Contact" }
+  ],
+  "avatarSettings": {
+    "image": "images/Me_2.png",
+    "welcomeMessage": "Hi! I'm the virtual assistant for {name}. Ask me about {first}'s projects, experience, skills, or how to get in touch."
+  },
+  "pronunciations": [
+    { "word": "Kandil", "phonetic": "Kan-Deel" }
+  ],
   "social": [
     { "platform": "GitHub", "icon": "fab fa-github", "url": "https://github.com/ashrafkandil" },
     { "platform": "LinkedIn", "icon": "fab fa-linkedin", "url": "https://www.linkedin.com/in/ashrafkandil" },
@@ -34,16 +58,40 @@
     ],
     "skills": [
       {
-        "title": "Languages",
-        "skills": ["Java", "Python", "JavaScript", "TypeScript", "C++", "SQL"]
+        "title": "Core Languages",
+        "skills": ["C#", "Python", "TypeScript", "JavaScript", "SQL", "C++", "Java"]
       },
       {
-        "title": "Frameworks & Libraries",
-        "skills": ["React", "Node.js", "Spring Boot", "Django", "Angular"]
+        "title": "Frontend & Mobile",
+        "skills": ["React", "React 19", "Next.js", "React Native", "Expo", "Vue.js", "Angular"]
       },
       {
-        "title": "Tools & Technologies",
-        "skills": ["AWS", "Docker", "Kubernetes", "Git", "Jenkins", "MongoDB"]
+        "title": "Backend & APIs",
+        "skills": ["Node.js", "Express", "FastAPI", "Django", "Spring Boot", "ASP.NET", "WCF", ".NET"]
+      },
+      {
+        "title": "AI/ML & NLP",
+        "skills": ["Google Gemini", "TensorFlow", "NLTK", "LibreTranslate", "LLM Integration"]
+      },
+      {
+        "title": "AI Coding Agents",
+        "skills": ["Claude Code", "Devin", "GitHub Copilot", "Cline", "Windsurf"]
+      },
+      {
+        "title": "Cloud & DevOps",
+        "skills": ["AWS", "Docker", "Kubernetes", "Git", "Jenkins", "CI/CD"]
+      },
+      {
+        "title": "Databases & Data",
+        "skills": ["SQL Server", "PostgreSQL", "SQLite", "MongoDB", "Elasticsearch", "InfluxDB", "Redis", "SSIS", "T-SQL"]
+      },
+      {
+        "title": "Frontend Styling & UI",
+        "skills": ["Tailwind CSS 4", "shadcn/ui", "DevExpress", "Telerik", "WPF", "PRISM 4", "MVVM", "MVP"]
+      },
+      {
+        "title": "Legacy & Enterprise",
+        "skills": ["Delphi", "VB.NET", "VB6", "COM+", "FoxPro", "Oracle", "Sybase"]
       }
     ]
   },

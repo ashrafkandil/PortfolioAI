@@ -39,7 +39,7 @@
     /* Hero dock: a vertical bar pinned to the left edge of the screen. Its
        width tracks the viewport, and everything inside it is sized relative to
        the dock rather than in fixed pixels. */
-    --hero-dock-width: clamp(230px, 21vw, 330px);
+    --hero-dock-width: clamp(280px, 24vw, 380px);
     /* Portrait = this fraction of the dock's inner width, capped by viewport
        height so it stays a modest block inside a tall bar. */
     --hero-photo-scale: 0.66;

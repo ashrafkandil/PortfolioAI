@@ -58,6 +58,7 @@ export interface Profile {
   tagline: string;
   shortBio: string;
   image: string;
+  avatarImage: string;
   email: string;
   phone: string;
   location: string;
@@ -74,6 +75,30 @@ export interface Profile {
   contactFormMailtoSuccess: string;
 }
 
+export interface SiteMeta {
+  seoTitle: string;
+  seoDescription: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogUrl: string;
+  themeColor: string;
+}
+
+export interface NavLink {
+  key: string;
+  label: string;
+}
+
+export interface AvatarSettings {
+  image: string;
+  welcomeMessage: string;
+}
+
+export interface Pronunciation {
+  word: string;
+  phonetic: string;
+}
+
 export interface SiteData {
   profile: Profile;
   social: SocialLink[];
@@ -83,4 +108,8 @@ export interface SiteData {
   /** Projects for the Personal page; a separate list backed by its own tables. */
   personalProjects: Project[];
   formEndpoint: string;
+  siteMeta: SiteMeta | null;
+  navLinks: NavLink[];
+  avatarSettings: AvatarSettings | null;
+  pronunciations: Pronunciation[];
 }

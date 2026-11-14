@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import type { ViewId } from '../hooks/useActiveView';
-
-const LINKS = [
-  { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'personal', label: 'Personal' },
-  { id: 'contact', label: 'Contact' },
-] as const;
+import type { NavLink } from '../types';
 
 interface NavbarProps {
   siteName: string;
@@ -18,9 +10,20 @@ interface NavbarProps {
   active: ViewId;
   /** Swap the loaded view — the bar never scrolls the page any more. */
   onNavigate: (view: ViewId) => void;
+  /** Navigation links from site data */
+  navLinks?: NavLink[];
 }
 
-export default function Navbar({ siteName, image, active, onNavigate }: NavbarProps) {
+const DEFAULT_LINKS: NavLink[] = [
+  { key: 'home', label: 'Home' },
+  { key: 'about', label: 'About' },
+  { key: 'experience', label: 'Experience' },
+  { key: 'projects', label: 'Projects' },
+  { key: 'personal', label: 'Personal' },
+  { key: 'contact', label: 'Contact' },
+];
+
+export default function Navbar({ siteName, image, active, onNavigate, navLinks }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   /**
@@ -31,6 +34,8 @@ export default function Navbar({ siteName, image, active, onNavigate }: NavbarPr
     setMenuOpen(false);
     onNavigate(view);
   };
+
+  const links = navLinks ?? DEFAULT_LINKS;
 
   return (
     <nav className="navbar">
@@ -63,15 +68,15 @@ export default function Navbar({ siteName, image, active, onNavigate }: NavbarPr
             <span />
           </button>
           <ul className={`nav-menu${menuOpen ? ' active' : ''}`} id="navMenu">
-            {LINKS.map((link) => (
-              <li key={link.id}>
+            {links.map((link) => (
+              <li key={link.key}>
                 <a
-                  href={`#/${link.id}`}
-                  className={`nav-link${active === link.id ? ' active' : ''}`}
-                  aria-current={active === link.id ? 'page' : undefined}
+                  href={`#/${link.key}`}
+                  className={`nav-link${active === link.key ? ' active' : ''}`}
+                  aria-current={active === link.key ? 'page' : undefined}
                   onClick={(event) => {
                     event.preventDefault();
-                    open(link.id);
+                    open(link.key);
                   }}
                 >
                   {link.label}

@@ -48,7 +48,7 @@ function buildFacts(profile: Profile, about: About, experience: ExperienceItem[]
     const company = current.company.split('|')[0].trim();
     facts.push({
       label: 'Current',
-      value: `${current.title} · ${company} (${current.period})`,
+      value: `${current.title} · ${company}`,
       icon: 'fa-solid fa-building',
     });
   }

@@ -12,6 +12,13 @@ const source = JSON.parse(fs.readFileSync(path.join(__dirname, 'seed-data.json')
 // Pass --force to deliberately reset back to the JSON contents.
 const force = process.argv.slice(2).some((arg) => arg === '--force' || arg === '-f');
 
+// The .db file is the single source of truth. --force wipes it, so it requires
+// explicit consent: set ALLOW_DB_WIPE=1 in the environment before running.
+if (force && process.env.ALLOW_DB_WIPE !== '1') {
+  console.error('Refusing to wipe portfolio.db. Set ALLOW_DB_WIPE=1 to override.');
+  process.exit(1);
+}
+
 // Tables ordered child-first so a --force reset respects foreign keys.
 const tables = [
   'experience_projects',
@@ -30,6 +37,10 @@ const tables = [
   'skill_categories',
   'about_bios',
   'social_links',
+  'nav_links',
+  'pronunciations',
+  'avatar_settings',
+  'site_meta',
   'profile',
 ];
 
@@ -49,8 +60,8 @@ try {
   }
 
   db.prepare(
-    `INSERT INTO profile (id, site_name, name, role, tagline, short_bio, image, email, phone, location, form_endpoint, contact_title, contact_intro, contact_form_title, contact_form_name_placeholder, contact_form_email_placeholder, contact_form_message_placeholder, contact_form_submit_text, contact_form_sending_text, contact_form_success_text, contact_form_error_text, contact_form_mailto_success)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO profile (id, site_name, name, role, tagline, short_bio, image, avatar_image, email, phone, location, form_endpoint, contact_title, contact_intro, contact_form_title, contact_form_name_placeholder, contact_form_email_placeholder, contact_form_message_placeholder, contact_form_submit_text, contact_form_sending_text, contact_form_success_text, contact_form_error_text, contact_form_mailto_success)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     source.profile.siteName ?? 'Portfolio',
     source.profile.name,
@@ -58,6 +69,7 @@ try {
     source.profile.tagline ?? '',
     source.profile.shortBio ?? '',
     source.profile.image ?? '',
+    source.profile.avatarImage ?? '',
     source.profile.email ?? '',
     source.profile.phone ?? '',
     source.profile.location ?? '',
@@ -74,6 +86,44 @@ try {
     source.profile.contactFormErrorText ?? 'Something went wrong. Please try again or email me directly.',
     source.profile.contactFormMailtoSuccess ?? 'Your email client should open with the message pre-filled.'
   );
+
+  // Seed site_meta
+  if (source.siteMeta) {
+    db.prepare(
+      `INSERT INTO site_meta (id, seo_title, seo_description, og_title, og_description, og_url, theme_color)
+       VALUES (1, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      source.siteMeta.seoTitle ?? '',
+      source.siteMeta.seoDescription ?? '',
+      source.siteMeta.ogTitle ?? '',
+      source.siteMeta.ogDescription ?? '',
+      source.siteMeta.ogUrl ?? '',
+      source.siteMeta.themeColor ?? '#0a0a0a'
+    );
+  }
+
+  // Seed nav_links
+  if (source.navLinks) {
+    const insertNav = db.prepare('INSERT INTO nav_links (key, label, sort) VALUES (?, ?, ?)');
+    source.navLinks.forEach((link, i) => insertNav.run(link.key, link.label, i));
+  }
+
+  // Seed avatar_settings
+  if (source.avatarSettings) {
+    db.prepare(
+      `INSERT INTO avatar_settings (id, image, welcome_message)
+       VALUES (1, ?, ?)`
+    ).run(
+      source.avatarSettings.image ?? '',
+      source.avatarSettings.welcomeMessage ?? ''
+    );
+  }
+
+  // Seed pronunciations
+  if (source.pronunciations) {
+    const insertPron = db.prepare('INSERT INTO pronunciations (word, phonetic, sort) VALUES (?, ?, ?)');
+    source.pronunciations.forEach((p, i) => insertPron.run(p.word, p.phonetic, i));
+  }
 
   const insertSocial = db.prepare(
     'INSERT INTO social_links (platform, icon, url, sort, is_active) VALUES (?, ?, ?, ?, ?)'

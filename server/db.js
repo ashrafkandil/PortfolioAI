@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS profile (
   tagline TEXT NOT NULL DEFAULT '',
   short_bio TEXT NOT NULL DEFAULT '',
   image TEXT NOT NULL DEFAULT '',
+  avatar_image TEXT NOT NULL DEFAULT '',
   email TEXT NOT NULL DEFAULT '',
   phone TEXT NOT NULL DEFAULT '',
   location TEXT NOT NULL DEFAULT '',
@@ -49,6 +50,36 @@ CREATE TABLE IF NOT EXISTS profile (
   contact_form_success_text TEXT NOT NULL DEFAULT 'Thank you, {name}! Your message has been sent.',
   contact_form_error_text TEXT NOT NULL DEFAULT 'Something went wrong. Please try again or email me directly.',
   contact_form_mailto_success TEXT NOT NULL DEFAULT 'Your email client should open with the message pre-filled.'
+);
+
+CREATE TABLE IF NOT EXISTS site_meta (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  seo_title TEXT NOT NULL DEFAULT '',
+  seo_description TEXT NOT NULL DEFAULT '',
+  og_title TEXT NOT NULL DEFAULT '',
+  og_description TEXT NOT NULL DEFAULT '',
+  og_url TEXT NOT NULL DEFAULT '',
+  theme_color TEXT NOT NULL DEFAULT '#0a0a0a'
+);
+
+CREATE TABLE IF NOT EXISTS nav_links (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  key TEXT NOT NULL UNIQUE,
+  label TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS avatar_settings (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  image TEXT NOT NULL DEFAULT '',
+  welcome_message TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS pronunciations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  word TEXT NOT NULL,
+  phonetic TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS social_links (
@@ -193,6 +224,7 @@ if (!socialColumns.some((column) => column.name === 'is_active')) {
 const profileColumns = db.prepare('PRAGMA table_info(profile)').all();
 const profileColumnNames = profileColumns.map((c) => c.name);
 const newProfileColumns = [
+  'avatar_image',
   'contact_title',
   'contact_intro',
   'contact_form_title',
@@ -299,6 +331,11 @@ function readSiteData() {
     experiences: [],
   }));
 
+  const siteMeta = db.prepare('SELECT * FROM site_meta WHERE id = 1').get();
+  const navLinks = db.prepare('SELECT key, label FROM nav_links ORDER BY sort, id').all().map((r) => ({ key: r.key, label: r.label }));
+  const avatarSettings = db.prepare('SELECT * FROM avatar_settings WHERE id = 1').get();
+  const pronunciations = db.prepare('SELECT word, phonetic FROM pronunciations ORDER BY sort, id').all().map((r) => ({ word: r.word, phonetic: r.phonetic }));
+
   return {
     profile: {
       siteName: profileRow.site_name,
@@ -307,6 +344,7 @@ function readSiteData() {
       tagline: profileRow.tagline,
       shortBio: profileRow.short_bio,
       image: profileRow.image,
+      avatarImage: profileRow.avatar_image,
       email: profileRow.email,
       phone: profileRow.phone,
       location: profileRow.location,
@@ -328,6 +366,20 @@ function readSiteData() {
     projects,
     personalProjects,
     formEndpoint: profileRow.form_endpoint,
+    siteMeta: siteMeta ? {
+      seoTitle: siteMeta.seo_title,
+      seoDescription: siteMeta.seo_description,
+      ogTitle: siteMeta.og_title,
+      ogDescription: siteMeta.og_description,
+      ogUrl: siteMeta.og_url,
+      themeColor: siteMeta.theme_color,
+    } : null,
+    navLinks,
+    avatarSettings: avatarSettings ? {
+      image: avatarSettings.image,
+      welcomeMessage: avatarSettings.welcome_message,
+    } : null,
+    pronunciations,
   };
 }
 

@@ -6,34 +6,18 @@
  * avatar degrades to text when missing.
  */
 
-/**
- * Pronunciation dictionary for words that TTS engines commonly mispronounce.
- *
- * The Web Speech API has no training or voice-cloning step, so the only lever
- * we get is respelling: we swap a word for a phonetic spelling the engine's
- * own letter-to-sound rules will read the way we want. This is how you "teach"
- * the avatar a name - add an entry below and the replacement is applied to
- * every spoken line before synthesis.
- *
- * Keys are matched as whole words, case-insensitively (so one entry covers
- * both "Kandil" and "kandil"). Values are the phonetic respelling. Use hyphens
- * to force syllable breaks and doubled vowels to lengthen a sound.
- */
-export const PRONUNCIATION_DICTIONARY: Record<string, string> = {
-  // "Kandil" (قنديل) is Arabic for "lamp" and is said "kan-DEEL", NOT "kan-dill".
-  // Respell so the engine stresses the long "ee" on the second syllable.
-  'Kandil': 'Kan-Deel',
-  // Add more as needed, e.g.:
-  // 'Ashraf': 'Ash-raf',
-};
+export interface Pronunciation {
+  word: string;
+  phonetic: string;
+}
 
 /**
  * Apply pronunciation corrections to text before sending to TTS.
  * Replaces known words with their phonetic equivalents.
  */
-export function applyPronunciation(text: string): string {
+export function applyPronunciation(text: string, pronunciations: Pronunciation[] = []): string {
   let result = text;
-  for (const [word, phonetic] of Object.entries(PRONUNCIATION_DICTIONARY)) {
+  for (const { word, phonetic } of pronunciations) {
     // Whole-word replacement (case-insensitive)
     const regex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
     result = result.replace(regex, phonetic);
@@ -85,13 +69,13 @@ interface SpeakHandlers {
  * When voices are already loaded this speaks synchronously: iOS Safari only
  * unlocks speech for an utterance started inside the click handler itself.
  */
-export function speak(text: string, locale: string, { onStart, onEnd }: SpeakHandlers = {}): void {
+export function speak(text: string, locale: string, { onStart, onEnd }: SpeakHandlers = {}, pronunciations: Pronunciation[] = []): void {
   if (!isTtsSupported()) {
     onEnd?.();
     return;
   }
   // Apply pronunciation corrections before speaking
-  const correctedText = applyPronunciation(text);
+  const correctedText = applyPronunciation(text, pronunciations);
   window.speechSynthesis.cancel();
   const utter = (voices: SpeechSynthesisVoice[]) => {
     const utterance = new SpeechSynthesisUtterance(correctedText);

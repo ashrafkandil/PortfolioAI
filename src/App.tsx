@@ -25,6 +25,29 @@ function StatusView({ message }: { message: string }) {
   );
 }
 
+function updateMetaTags(siteMeta: { seoTitle: string; seoDescription: string; ogTitle: string; ogDescription: string; ogUrl: string; themeColor: string } | null) {
+  if (!siteMeta) return;
+
+  document.title = siteMeta.seoTitle;
+
+  const setMeta = (name: string, content: string, property = false) => {
+    const attr = property ? 'property' : 'name';
+    let element = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement;
+    if (!element) {
+      element = document.createElement('meta');
+      element.setAttribute(attr, name);
+      document.head.appendChild(element);
+    }
+    element.setAttribute('content', content);
+  };
+
+  setMeta('description', siteMeta.seoDescription);
+  setMeta('og:title', siteMeta.ogTitle, true);
+  setMeta('og:description', siteMeta.ogDescription, true);
+  setMeta('og:url', siteMeta.ogUrl, true);
+  setMeta('theme-color', siteMeta.themeColor);
+}
+
 export default function App() {
   const { data, loading, error } = useSiteData();
   const { view, navigate: go } = useActiveView();
@@ -45,6 +68,13 @@ export default function App() {
     [go, resetScroll]
   );
 
+  // Update meta tags when site data loads
+  useEffect(() => {
+    if (data?.siteMeta) {
+      updateMetaTags(data.siteMeta);
+    }
+  }, [data?.siteMeta]);
+
   const placeholder = error ? `Could not load site data: ${error}` : 'Loading site data…';
 
   return (
@@ -57,6 +87,7 @@ export default function App() {
         image={data?.profile.image}
         active={view}
         onNavigate={navigate}
+        navLinks={data?.navLinks}
       />
       {data && error && (
         <p className="data-refresh-warning" role="status">
@@ -95,7 +126,7 @@ export default function App() {
           ))}
         {data && <Footer profile={data.profile} social={data.social} />}
       </main>
-      {data && <AvatarWidget profile={data.profile} view={view} onNavigate={navigate} />}
+      {data && <AvatarWidget profile={data.profile} view={view} onNavigate={navigate} avatarSettings={data.avatarSettings} pronunciations={data.pronunciations} />}
     </div>
   );
 }

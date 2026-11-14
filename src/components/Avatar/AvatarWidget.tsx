@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
-import type { Profile } from '../../types';
+import type { Profile, AvatarSettings, Pronunciation } from '../../types';
 import type { ViewId } from '../../hooks/useActiveView';
 import {
   FALLBACK_CONFIG,
@@ -24,11 +24,15 @@ interface Message {
 }
 
 interface AvatarWidgetProps {
-  profile: Pick<Profile, 'name' | 'image'>;
+  profile: Pick<Profile, 'name' | 'image' | 'avatarImage'>;
   /** The view currently shown, so answers can tell whether the visitor moved on. */
   view?: ViewId;
   /** Opens a view; answers use it to show the part of the site they are about. */
   onNavigate?: (view: ViewId) => void;
+  /** Avatar settings from site data */
+  avatarSettings?: AvatarSettings | null;
+  /** Pronunciation rules from site data */
+  pronunciations?: Pronunciation[];
 }
 
 /** Remembers "Hide assistant" for the rest of the visit only. */
@@ -90,8 +94,11 @@ function spotlight(anchor: string): void {
   requestAnimationFrame(find);
 }
 
-function greetingFor(name: string): string {
+function greetingFor(name: string, welcomeMessage?: string): string {
   const first = name.split(' ')[0];
+  if (welcomeMessage) {
+    return welcomeMessage.replace('{name}', name).replace('{first}', first);
+  }
   return `Hi! I'm the virtual assistant for ${name}. Ask me about ${first}'s projects, experience, skills, or how to get in touch.`;
 }
 
@@ -101,9 +108,9 @@ function greetingFor(name: string): string {
  * Audio is strictly opt-in: nothing is spoken until the visitor presses Play
  * (or a project's Listen button), and Mute stops it again.
  */
-export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidgetProps) {
+export default function AvatarWidget({ profile, view, onNavigate, avatarSettings, pronunciations }: AvatarWidgetProps) {
   const first = profile.name.split(' ')[0];
-  const greeting = greetingFor(profile.name);
+  const greeting = greetingFor(profile.name, avatarSettings?.welcomeMessage);
 
   const [hidden, setHidden] = useState(readHidden);
   const [open, setOpen] = useState(false);
@@ -202,9 +209,9 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
       speak(text, localeFor(code), {
         onStart: () => setSpeaking(true),
         onEnd: () => setSpeaking(false),
-      });
+      }, pronunciations);
     },
-    [localeFor]
+    [localeFor, pronunciations]
   );
 
   const setAudio = useCallback((on: boolean) => {
@@ -550,7 +557,7 @@ export default function AvatarWidget({ profile, view, onNavigate }: AvatarWidget
         aria-label={open ? `Close ${first}'s assistant` : `Open ${first}'s assistant`}
         aria-describedby={hovered && !open ? avatarHintId : undefined}
       >
-        <img src="/images/Me_2.png" alt="" width={64} height={64} />
+        <img src={profile.avatarImage ?? '/images/Me_2.png'} alt="" width={64} height={64} />
         <span className="avatar-wave" aria-hidden="true">
           <span />
           <span />

@@ -11,3 +11,4 @@ dist
 # The portfolio.db itself IS tracked — it is the single source of truth.
 # Only the backups folder stays gitignored.
 server/data/backups/
+server/data/portfolio.sqbpro
